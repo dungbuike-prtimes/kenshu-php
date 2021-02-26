@@ -1,0 +1,34 @@
+version: "3.8"
+services:
+  php:
+    image: php:7.2-apache
+    volumes:
+    - .:/var/www/html
+    ports:
+    - 3000:80
+  mysql:
+    image: mysql:5.7
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - "./mysql:/var/lib/mysql"
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=prt_db
+      - MSQL_USER=dungbk
+      - MYSQL_PASSWORD=123456
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    environment:
+      - PMA_ARBITRARY=1
+      - PMA_HOST=mysql
+      - PMA_USER=root
+      - PMA_PASSWORD=root
+      - PMA_PORT=3306
+    links:
+      - mysql
+    restart: always
+    ports:
+    - 4040:80
+    volumes:
+    - ./phpmyadmin/sessions:/sessions
