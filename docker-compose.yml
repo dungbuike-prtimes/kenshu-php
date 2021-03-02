@@ -1,17 +1,19 @@
 version: "3.8"
 services:
   php:
-    image: php:7.2-apache
-    volumes:
-    - .:/var/www/html
-    ports:
-    - 3000:80
-  mysql:
-    image: mysql:5.7
-    command: --default-authentication-plugin=mysql_native_password
+    build:
+      context: "./config/php-apache/"
     restart: always
     volumes:
-      - "./mysql:/var/lib/mysql"
+    - "./public:/var/www/html"
+    ports:
+    - "3000:80"
+  mysql:
+    image: mysql:5.7
+    command: "--default-authentication-plugin=mysql_native_password"
+    restart: always
+    volumes:
+      - "./config/mysql:/var/lib/mysql"
     environment:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=prt_db
@@ -31,4 +33,4 @@ services:
     ports:
     - 4040:80
     volumes:
-    - ./phpmyadmin/sessions:/sessions
+    - "./config/phpmyadmin/sessions:/sessions"
