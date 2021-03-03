@@ -11,7 +11,7 @@ class BaseController
     }
 
 
-    public function view($view, $data = []) {
+    public function view($view, $data = [], $error = "") {
         require_once __DIR__."/../Views/". $view .".php";
     }
 }

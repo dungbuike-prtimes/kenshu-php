@@ -3,6 +3,7 @@ services:
   php:
     build:
       context: "./config/php-apache/"
+      dockerfile: Dockerfile
     restart: always
     volumes:
     - "./public:/var/www/html"
@@ -19,6 +20,8 @@ services:
       - MYSQL_DATABASE=prt_db
       - MSQL_USER=dungbk
       - MYSQL_PASSWORD=123456
+    ports:
+    - "3306:3306"
   phpmyadmin:
     image: phpmyadmin/phpmyadmin
     environment:
@@ -31,6 +34,6 @@ services:
       - mysql
     restart: always
     ports:
-    - 4040:80
+    - "4040:80"
     volumes:
     - "./config/phpmyadmin/sessions:/sessions"
