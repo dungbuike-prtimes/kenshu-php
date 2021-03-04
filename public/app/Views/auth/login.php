@@ -9,7 +9,7 @@
         <div class='form__header'>
             <h1 class='form__header-text'>Login</h1>
         </div>
-        <form class="form__body" method="post" action="/auth/postLogin">
+        <form class="form__body" method="post" action="/auth/login">
             <?php if (isset($error)) {
                 echo             '<div class="form__message">' . $error . '</div>';
             }
