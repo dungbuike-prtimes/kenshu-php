@@ -3,17 +3,20 @@ require_once 'Model.php';
 
 class User extends Model
 {
-    public $email;
-    private $password;
-    private $user;
+
+    public function __construct()
+    {
+        parent::__construct();
+        $this->table = 'users';
+    }
 
     public function auth($email, $password) {
-        $this->dbHandle->query("SELECT * FROM users WHERE email = :email");
-        $this->dbHandle->bind(':email', $email, null);
-        $this->user = $this->dbHandle->first();
-        if ($this->user) {
-            if (password_verify($password, $this->user['PASSWORD'])) {
-                return $this->user;
+        $this->db->query("SELECT * FROM users WHERE email = :email");
+        $this->db->bind(':email', $email, null);
+        $user = $this->db->first();
+        if ($user) {
+            if (password_verify($password, $user['PASSWORD'])) {
+                return $user;
             }
         } else {
             return null;
@@ -21,18 +24,18 @@ class User extends Model
     }
 
     public function create($params = []) {
-        $this->dbHandle->query("INSERT INTO users (username, email, PASSWORD, phone_number) VALUES (:username, :email, :password, :phone_number )");
-        $this->dbHandle->bind(':email', $params['email'], null);
-        $this->dbHandle->bind(':username', $params['username'], null);
-        $this->dbHandle->bind(':phone_number', $params['phone_number'], null);
-        $this->dbHandle->bind(':password', password_hash($params['email'], PASSWORD_DEFAULT), null);
-        return $this->dbHandle->execute();
+        $this->db->query("INSERT INTO users (username, email, PASSWORD, phone_number) VALUES (:username, :email, :password, :phone_number )");
+        $this->db->bind(':email', $params['email'], null);
+        $this->db->bind(':username', $params['username'], null);
+        $this->db->bind(':phone_number', $params['phone_number'], null);
+        $this->db->bind(':password', password_hash($params['email'], PASSWORD_DEFAULT), null);
+        return $this->db->execute();
     }
 
-    public function isExisted($email) {
-        $this->dbHandle->query("SELECT * FROM users WHERE email = :email");
-        $this->dbHandle->bind(':email', $email, null);
-        $this->user = $this->dbHandle->first();
-        return $this->user ? true : false;
+    public function isExisted($email) :bool {
+        $this->db->query("SELECT * FROM users WHERE email = :email");
+        $this->db->bind(':email', $email, null);
+        $user = $this->db->first();
+        return $user ? true : false;
     }
 }

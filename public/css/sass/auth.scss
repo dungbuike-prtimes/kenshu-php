@@ -15,6 +15,7 @@
   background: #fff;
   border: solid 1px #fff;
   border-radius: 10px;
+  padding: 20px;
 
   &__header {
     height: 70px;
@@ -33,24 +34,14 @@
     margin: 20px;
     display: flex;
     flex-direction: column;
-    align-items: center;
-  }
-
-  &__message {
-    height: 50px;
-    width: 90%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
   }
 
   &__field {
     margin-top: 10px;
     height: 10%;
-    width: 100%;
+    max-width: 100%;
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
   }
 
   &__field-label {
@@ -59,12 +50,29 @@
   }
 
   &__field-input {
-    width: 100%;
-    font-size: 20px;
+    max-width: 100%;
+    display: block;
+    padding: .375rem .75rem;
+    font-size: 1rem;
+    line-height: 1.5;
+    color: #495057;
+    background-color: #fff;
+    background-clip: padding-box;
+    border: 1px solid #ced4da;
+    border-radius: .25rem;
+    transition: border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+
+    &:focus {
+      color: #495057;
+      background-color: #fff;
+      border-color: #80bdff;
+      outline: 0;
+      box-shadow: 0 0 0 0.2rem rgba(0,123,255,0.25);
+    }
   }
 
   &__submit {
-    margin-top: 20px;
+    margin: 20px auto;
     width: 30%;
     height: 40px;
   }

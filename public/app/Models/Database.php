@@ -14,7 +14,7 @@ class Database
 
     public function __construct()
     {
-        $conn = 'mysql:host=' . $this->dbHost . ';dbname=prt_db';
+        $conn = 'mysql:host=' . $this->dbHost . ';dbname=' . $this->dbName;
         $options = array(
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION

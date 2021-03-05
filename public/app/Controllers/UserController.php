@@ -2,7 +2,7 @@
 require_once 'BaseController.php';
 require_once(__DIR__ . '/../Models/User.php');
 
-class authController extends BaseController
+class userController extends BaseController
 {
     function __construct()
     {
@@ -14,19 +14,25 @@ class authController extends BaseController
         return $this->view('auth/login');
     }
 
-    public function postLogin()
+    public function auth()
     {
         $email = $_POST['email'];
         $password = $_POST['password'];
         $user = new User();
         $result = $user->auth($email, $password);
 
-        if ($user->auth($email, $password)) {
+        if ($result) {
             echo "Loged in";
             $_SESSION['user']['username'] = $result['username'];
             $_SESSION['user']['email'] = $result['email'];
+            $_SESSION['user']['id'] = $result['id'];
         } else {
-            echo "Login fail";
+            $message = [
+                'type' => 'error',
+                'status' => '406',
+                'message' => 'Login fail!'
+            ];
+            $this->view('auth/login', $message);
         }
     }
 
@@ -40,7 +46,7 @@ class authController extends BaseController
         return $this->view('auth/register');
     }
 
-    public function postRegister()
+    public function create()
     {
         $params = [];
         $params['email'] = $_POST['email'];
@@ -59,6 +65,5 @@ class authController extends BaseController
         } else {
             echo "create fail!";
         }
-
     }
 }

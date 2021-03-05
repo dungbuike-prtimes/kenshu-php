@@ -3,10 +3,11 @@ require_once "Database.php";
 
 class Model
 {
-    protected $dbHandle;
+    protected $table;
+    protected $db;
 
     function __construct() {
-        $this->dbHandle = new Database();
+        $this->db = new Database();
     }
 
 }

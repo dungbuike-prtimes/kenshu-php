@@ -43,7 +43,8 @@ class Route
     public function handle(string $url, string $method)
     {
         foreach ($this->route_map as $route) {
-            if ($route['method'] == $method && AuthHelper::checkAuth() == $route["checkAuth"]) {
+            if ((!($route["checkAuth"]) || AuthHelper::checkAuth()) && ($route['method'] == $method)) {
+                // only case $route["checkAuth"]=Auth_Require(true) and AuthHelper::checkAuth()=false that can't access
                 $reg = '/^'. $route['url'] . '$/';
                 if (preg_match($reg, $url, $params)) {
                     array_shift($params);

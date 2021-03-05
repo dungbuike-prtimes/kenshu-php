@@ -1,8 +1,14 @@
 <?php
 
-$router->get('/auth/login', "authController@login");
-$router->get('/auth/logout', "authController@logout", AUTH_REQUIRED);
-$router->post('/auth/login', "authController@postLogin");
-$router->get('/auth/register', "authController@register");
+$router->get('/', "homeController@index");
+$router->get('/auth/login', "UserController@login");
+$router->post('/auth/login', "UserController@auth");
+$router->get('/auth/logout', "UserController@logout", AUTH_REQUIRED);
+$router->get('/auth/register', "UserController@register");
+$router->post('/auth/register', "UserController@create");
 
-$router->get('/user/all', "authController@login", AUTH_REQUIRED);
+
+$router->get('/tag/create', "TagController@create", AUTH_REQUIRED);
+$router->post('/tag/create', "TagController@store", AUTH_REQUIRED);
+$router->get('/tag/edit/{id}', "TagController@edit", AUTH_REQUIRED);
+$router->post('/tag/edit/{id}', "TagController@update", AUTH_REQUIRED);

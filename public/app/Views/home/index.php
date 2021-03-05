@@ -5,9 +5,8 @@
 </head>
 <body>
 <div class='container'>
-<h1>
-Home > Index
-</h1>
+    <h1>Home > Index</h1>
+    <a href="/auth/login">login</a>
 </div>
 </body>
 </html>

@@ -10,8 +10,22 @@
             <h1 class='form__header-text'>Login</h1>
         </div>
         <form class="form__body" method="post" action="/auth/login">
-            <?php if (isset($error)) {
-                echo             '<div class="form__message">' . $error . '</div>';
+            <?php
+            if (isset($message['type'])) {
+                switch ($message['type']) {
+                    case 'error': {
+                        echo "<div class=\"form__message form__message--error\">" . $message['message'] . "</div>";
+                        break;
+                    }
+                    case 'success': {
+                        echo "<div class=\"form__message form__message--success\">" . $message['message'] . "</div>";
+                        break;
+                    }
+                    case 'warning': {
+                        echo "<div class=\"form__message form__message--warning\">" . $message['message'] . "</div>";
+                        break;
+                    }
+                }
             }
             ?>
             <div class="form__field">

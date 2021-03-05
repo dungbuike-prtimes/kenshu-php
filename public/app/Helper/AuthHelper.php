@@ -7,4 +7,8 @@ class AuthHelper extends Helper
     {
         return isset($_SESSION['user']);
     }
+
+    public static function getUserId() {
+        return isset($_SESSION['user']['id']) ? $_SESSION['user']['id'] : null;
+    }
 }
