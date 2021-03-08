@@ -65,4 +65,8 @@ class Database
         return $this->statement->fetch(PDO::FETCH_ASSOC);
     }
 
+    public function lastInsertedId() {
+        $this->database->lastInsertId();
+    }
+
 }

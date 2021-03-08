@@ -1,0 +1,85 @@
+@import "base";
+
+.form {
+  width: 100%;
+  border: solid 1px #6c757d;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 10px;
+
+  &__field {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    margin-top: 20px;
+  }
+
+  &__label {
+    font-size: 20px;
+  }
+
+  &__input {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+
+    &--select2 {
+      height: 30px;
+    }
+
+    &--image {
+      width: 90%;
+      box-sizing: border-box;
+      margin-top: 10px;
+    }
+  }
+
+  &__text-area {
+    height: 250px;
+    margin-top: 10px;
+  }
+
+  &__file-upload {
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+
+    &-cancel {
+      display: inline-block;
+      width: 13px;
+      height: 13px;
+      color: #000;
+    }
+  }
+
+  &__image-preview {
+    margin: 20px;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  &__button-group {
+    margin-top: 20px;
+  }
+
+  &__tag-field {
+    margin-top: 10px;
+    display: flex;
+  }
+
+  &__tag {
+    display: inline-block;
+    width: 30px;
+    padding: 0 5px;
+    height: 20px;
+    background-color: #74d400;
+    color: #fff;
+    border-radius: 3px;
+    text-align: center;
+    margin-right: 10px;
+  }
+}

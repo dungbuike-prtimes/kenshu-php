@@ -23,14 +23,21 @@
             </div>
             <div class="content-container__body">
                 <ul class="content-container__list">
-                    <li class="post">
+                    <?php
+                    if (!isset($data['posts'])) {
+                        echo "<p>You have no post.</p>";
+                    }
+                    foreach ($data['posts'] as $post) {
+                        echo '<li class="post">
                         <a class="post__title">aaaaa</a>
                         <span class="post__content">aaaa</span>
                         <div class="post__tag-box">
                             <span class="post__tag-item">adf</span>
                             <span class="post__tag-item">asdg</span>
                         </div>
-                    </li>
+                    </li>';
+                    }
+                    ?>
                 </ul>
             </div>
         </div>

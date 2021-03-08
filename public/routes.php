@@ -12,3 +12,7 @@ $router->get('/tag/create', "TagController@create", AUTH_REQUIRED);
 $router->post('/tag/create', "TagController@store", AUTH_REQUIRED);
 $router->get('/tag/edit/{id}', "TagController@edit", AUTH_REQUIRED);
 $router->post('/tag/edit/{id}', "TagController@update", AUTH_REQUIRED);
+
+$router->get('/post/index', "PostController@index", AUTH_REQUIRED);
+$router->get('/post/create', "PostController@create", AUTH_REQUIRED);
+$router->post('/post/create', "PostController@store", AUTH_REQUIRED);

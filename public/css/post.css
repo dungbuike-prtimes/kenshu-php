@@ -1,0 +1,116 @@
+body {
+  margin: 0;
+  padding: 0;
+  display: flex;
+}
+
+.form__message {
+  position: relative;
+  padding: .75rem 1.25rem;
+  margin-bottom: 1rem;
+  border: 1px solid transparent;
+  border-radius: .25rem;
+  max-width: 100%;
+}
+
+.form__message--error {
+  color: #721c24;
+  background-color: #f8d7da;
+  border-color: #f5c6cb;
+}
+
+.form__message--warning {
+  color: #856404;
+  background-color: #fff3cd;
+  border-color: #ffeeba;
+}
+
+.form__message--success {
+  color: #155724;
+  background-color: #d4edda;
+  border-color: #c3e6cb;
+}
+
+.form {
+  width: 100%;
+  border: solid 1px #6c757d;
+  padding: 10px;
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  box-sizing: border-box;
+  border-radius: 10px;
+}
+
+.form__field {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.form__label {
+  font-size: 20px;
+}
+
+.form__input {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.form__input--select2 {
+  height: 30px;
+}
+
+.form__input--image {
+  width: 90%;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.form__text-area {
+  height: 250px;
+  margin-top: 10px;
+}
+
+.form__file-upload {
+  width: 100%;
+  box-sizing: border-box;
+  margin-top: 10px;
+}
+
+.form__file-upload-cancel {
+  display: inline-block;
+  width: 13px;
+  height: 13px;
+  color: #000;
+}
+
+.form__image-preview {
+  margin: 20px;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+}
+
+.form__button-group {
+  margin-top: 20px;
+}
+
+.form__tag-field {
+  margin-top: 10px;
+  display: flex;
+}
+
+.form__tag {
+  display: inline-block;
+  width: 30px;
+  padding: 0 5px;
+  height: 20px;
+  background-color: #74d400;
+  color: #fff;
+  border-radius: 3px;
+  text-align: center;
+  margin-right: 10px;
+}
