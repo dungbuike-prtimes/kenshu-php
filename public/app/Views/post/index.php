@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Post</title>
     <link rel="stylesheet" href="../../../css/styles.css">
+    <link rel="stylesheet" href="../../../css/post.css">
 </head>
 <body>
 <header class="header">
@@ -22,6 +23,9 @@
                 <h2>Content</h2>
             </div>
             <div class="content-container__body">
+                <div class="form__field">
+                    <a href="/post/create" type="button" class="form__button--success --pull-right">+ New Post</a>
+                </div>
                 <ul class="content-container__list">
                     <?php
                     if (!isset($data['posts'])) {
@@ -29,13 +33,13 @@
                     }
                     foreach ($data['posts'] as $post) {
                         echo '<li class="post">
-                        <a class="post__title">aaaaa</a>
-                        <span class="post__content">aaaa</span>
-                        <div class="post__tag-box">
-                            <span class="post__tag-item">adf</span>
-                            <span class="post__tag-item">asdg</span>
-                        </div>
-                    </li>';
+                        <a class="post__title" href="/post/edit/' . $post["id"] . '">' . $post["title"] . '</a>
+                        <span class="post__content">' . $post["content"] .'</span>
+                        <div class="post__tag-box">';
+                        foreach ($post['tags'] as $tag) {
+                            echo '<span class="form__tag">' . $tag . '</span>';
+                        }
+                        echo '</div></li>';
                     }
                     ?>
                 </ul>

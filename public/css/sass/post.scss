@@ -27,7 +27,7 @@
     margin-top: 10px;
 
     &--select2 {
-      height: 30px;
+      height: 40px;
     }
 
     &--image {
@@ -69,17 +69,25 @@
   &__tag-field {
     margin-top: 10px;
     display: flex;
+    align-items: center;
   }
 
   &__tag {
     display: inline-block;
-    width: 30px;
-    padding: 0 5px;
-    height: 20px;
-    background-color: #74d400;
-    color: #fff;
-    border-radius: 3px;
+    padding: .25em .4em;
+    font-size: 100%;
+    font-weight: 700;
+    line-height: 1;
     text-align: center;
+    white-space: nowrap;
+    vertical-align: baseline;
+    border-radius: .25rem;
+    color: #fff;
+    background-color: #5eab02;
     margin-right: 10px;
   }
+}
+
+.--pull-right {
+  margin-left: auto;
 }

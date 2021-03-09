@@ -23,6 +23,7 @@ class Tag extends Model
         return $tag ? $tag : null;
     }
 
+
     public function create($params) {
         $this->db->query("INSERT INTO tags (NAME, description) VALUES (:name, :description)");
         $this->db->bind(':name', $params["name"], null);

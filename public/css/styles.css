@@ -4,6 +4,19 @@ body {
   display: flex;
 }
 
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  font-family: Arial;
+  font-weight: normal;
+  color: #000;
+}
+
 .form__message {
   position: relative;
   padding: .75rem 1.25rem;
@@ -34,6 +47,10 @@ body {
 body {
   display: flex;
   flex-direction: column;
+}
+
+li {
+  margin-top: 10px;
 }
 
 .header {
@@ -100,7 +117,6 @@ body {
 
 .content-container {
   width: 70%;
-  height: 1000px;
   border-radius: 5px;
   background-color: #fff;
   display: flex;
@@ -116,7 +132,8 @@ body {
 .content-container__body {
   display: flex;
   flex-direction: column;
-  margin: 40px 20px 20px 20px;
+  margin: 20px;
+  box-sizing: border-box;
 }
 
 .side-container {
@@ -148,6 +165,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 150px;
+  box-sizing: border-box;
 }
 
 .post__title {
@@ -168,7 +186,7 @@ body {
 }
 
 .post__tag-box {
-  font-size: 24px;
+  font-size: 13px;
   font-weight: bold;
   border-bottom: solid 1px #e6e6e6;
   height: 20%;
@@ -184,6 +202,12 @@ body {
   line-height: 17px;
   margin: 0 5px 0 5px;
   padding: 0 5px 0 5px;
+}
+
+.post__action {
+  display: flex;
+  align-items: center;
+  font-size: 13px;
 }
 
 .form--create-tag {
@@ -259,6 +283,52 @@ body {
   color: #fff;
   background-color: #218838;
   border-color: #1e7e34;
+}
+
+.form__button--primary {
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  color: #fff;
+  background-color: #007bff;
+  border: 1px solid #007bff;
+}
+
+.form__button--primary:hover {
+  color: #fff;
+  background-color: #0069d9;
+  border-color: #0069d9;
+}
+
+.form__button--danger {
+  cursor: pointer;
+  display: inline-block;
+  font-weight: 400;
+  text-align: center;
+  white-space: nowrap;
+  vertical-align: middle;
+  padding: .375rem .75rem;
+  font-size: 1rem;
+  line-height: 1.5;
+  border-radius: .25rem;
+  transition: color .15s ease-in-out,background-color .15s ease-in-out,border-color .15s ease-in-out,box-shadow .15s ease-in-out;
+  color: #fff;
+  background-color: #dc3545;
+  border-color: #dc3545;
+}
+
+.form__button--danger:hover {
+  color: #fff;
+  background-color: #c82333;
+  border-color: #bd2130;
 }
 
 .form__button--cancel {

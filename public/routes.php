@@ -16,3 +16,5 @@ $router->post('/tag/edit/{id}', "TagController@update", AUTH_REQUIRED);
 $router->get('/post/index', "PostController@index", AUTH_REQUIRED);
 $router->get('/post/create', "PostController@create", AUTH_REQUIRED);
 $router->post('/post/create', "PostController@store", AUTH_REQUIRED);
+$router->get('/post/edit/{id}', "PostController@edit", AUTH_REQUIRED);
+$router->put('/post/edit/{id}', "PostController@update", AUTH_REQUIRED);

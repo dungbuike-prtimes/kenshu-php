@@ -4,6 +4,19 @@ body {
   display: flex;
 }
 
+ul {
+  margin: 0;
+  padding: 0;
+  list-style-type: none;
+}
+
+a {
+  text-decoration: none;
+  font-family: Arial;
+  font-weight: normal;
+  color: #000;
+}
+
 .form__message {
   position: relative;
   padding: .75rem 1.25rem;
@@ -60,7 +73,7 @@ body {
 }
 
 .form__input--select2 {
-  height: 30px;
+  height: 40px;
 }
 
 .form__input--image {
@@ -101,16 +114,24 @@ body {
 .form__tag-field {
   margin-top: 10px;
   display: flex;
+  align-items: center;
 }
 
 .form__tag {
   display: inline-block;
-  width: 30px;
-  padding: 0 5px;
-  height: 20px;
-  background-color: #74d400;
-  color: #fff;
-  border-radius: 3px;
+  padding: .25em .4em;
+  font-size: 100%;
+  font-weight: 700;
+  line-height: 1;
   text-align: center;
+  white-space: nowrap;
+  vertical-align: baseline;
+  border-radius: .25rem;
+  color: #fff;
+  background-color: #5eab02;
   margin-right: 10px;
+}
+
+.--pull-right {
+  margin-left: auto;
 }

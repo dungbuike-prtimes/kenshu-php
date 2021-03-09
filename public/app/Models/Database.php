@@ -66,7 +66,7 @@ class Database
     }
 
     public function lastInsertedId() {
-        $this->database->lastInsertId();
+        return $this->database->lastInsertId();
     }
 
 }

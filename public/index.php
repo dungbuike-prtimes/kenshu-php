@@ -8,6 +8,24 @@ define('AUTH_NOT_REQUIRED', false);
 
 $request_url = !empty($_SERVER['REQUEST_URI']) ? $_SERVER['REQUEST_URI'] : '/';
 $request_method = !empty($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET';
+if ($request_method == 'POST') {
+    if (isset($_POST['__method'])) {
+        switch ($_POST['__method']) {
+            case 'PUT': {
+                $request_method = 'PUT';
+                break;
+            }
+            case 'PATCH': {
+                $request_method = 'PATCH';
+                break;
+            }
+            case 'DELETE': {
+                $request_method = 'DELETE';
+                break;
+            }
+        }
+    }
+}
 
 $router = new Route();
 require_once "routes.php";

@@ -22,6 +22,11 @@ class Route
         $this->assignRequest($url, 'POST', $action, $checkAuth);
     }
 
+    public function put(string $url, $action, $checkAuth = AUTH_NOT_REQUIRED)
+    {
+        $this->assignRequest($url, 'PUT', $action, $checkAuth);
+    }
+
     public function assignRequest(string $url, string $method, $action, $checkAuth = AUTH_NOT_REQUIRED)
     {
         if (preg_match_all('/({([a-zA-Z]+)})/', $url, $params)) {
