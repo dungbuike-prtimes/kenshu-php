@@ -7,15 +7,9 @@
     <link rel="stylesheet" href="../../../css/post.css">
 </head>
 <body>
-<header class="header">
-    <div class="header__wrapper">
-        <div class="header__logo">Logo</div>
-        <div class="header__nav">
-            <a class="header__nav-item">Home</a>
-            <a class="header__nav-item">Logout</a>
-        </div>
-    </div>
-</header>
+<?php
+include_once __DIR__."/../layouts/header.php";
+?>
 <div class="main">
     <div class="main__wrapper">
         <div class="content-container">
@@ -23,6 +17,9 @@
                 <h2>Content</h2>
             </div>
             <div class="content-container__body">
+                <?php
+                include_once __DIR__."/../components/message.php";
+                ?>
                 <div class="form__field">
                     <a href="/post/create" type="button" class="form__button--success --pull-right">+ New Post</a>
                 </div>

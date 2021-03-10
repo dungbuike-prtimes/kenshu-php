@@ -7,15 +7,9 @@
     <link rel="stylesheet" href="../../../css/post.css">
 </head>
 <body>
-<header class="header">
-    <div class="header__wrapper">
-        <div class="header__logo">Logo</div>
-        <div class="header__nav">
-            <a class="header__nav-item">Home</a>
-            <a class="header__nav-item">Logout</a>
-        </div>
-    </div>
-</header>
+<?php
+include_once __DIR__."/../layouts/header.php";
+?>
 <div class="main">
     <div class="main__wrapper">
         <div class="content-container">
@@ -58,7 +52,7 @@
                     </div>
                     <div class="form__button-group">
                         <input type="submit" class="form__button--success" value="Create">
-                        <input type="button" class="form__button--cancel" value="Cancel">
+                        <input id="cancel-button" type="button" class="form__button--cancel" value="Cancel">
                     </div>
                 </form>
             </div>
@@ -109,10 +103,15 @@
             tagSelectedArr.push(val);
         }
     })
-
     let createTag = document.getElementById('create-tag');
     createTag.addEventListener('click', () => {
         window.location.href = '/tag/create';
     })
+
+    let cancelButton = document.getElementById('cancel-button');
+    cancelButton.addEventListener('click', () => {
+        history.back();
+    })
+
 </script>
 </html>

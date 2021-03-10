@@ -27,6 +27,11 @@ class Route
         $this->assignRequest($url, 'PUT', $action, $checkAuth);
     }
 
+    public function delete(string $url, $action, $checkAuth = AUTH_NOT_REQUIRED)
+    {
+        $this->assignRequest($url, 'DELETE', $action, $checkAuth);
+    }
+
     public function assignRequest(string $url, string $method, $action, $checkAuth = AUTH_NOT_REQUIRED)
     {
         if (preg_match_all('/({([a-zA-Z]+)})/', $url, $params)) {
