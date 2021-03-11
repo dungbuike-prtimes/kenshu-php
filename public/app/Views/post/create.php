@@ -18,7 +18,7 @@ include_once __DIR__."/../layouts/header.php";
             </div>
             <div class="content-container__body">
 
-                <form id="form" class="form" method="post" action="/post/create" enctype="multipart/form-data">
+                <form id="form" class="form" method="post" action="/posts" enctype="multipart/form-data">
                     <?php
                     include_once __DIR__."/../components/message.php";
                     ?>
@@ -105,12 +105,12 @@ include_once __DIR__."/../layouts/header.php";
     })
     let createTag = document.getElementById('create-tag');
     createTag.addEventListener('click', () => {
-        window.location.href = '/tag/create';
+        window.location.href = '/tags/create';
     })
 
     let cancelButton = document.getElementById('cancel-button');
     cancelButton.addEventListener('click', () => {
-        history.back();
+        window.location.href = '/posts'
     })
 
 </script>

@@ -84,10 +84,23 @@
     text-align: center;
     white-space: nowrap;
     vertical-align: baseline;
-    border-radius: .25rem;
+    border-radius: .25rem 0 .25rem .25rem;
     color: #fff;
     background-color: #5eab02;
-    margin-right: 10px;
+    margin-right: 20px;
+    position: relative;
+    cursor: pointer;
+
+    form &::after {
+      content: 'x';
+      position: absolute;
+      font-size: 10px;
+      right: -12px;
+      top: 0;
+      background-color: #dc3545;
+      padding: 2px 3px;
+      font-family: Arial;
+    }
   }
 }
 

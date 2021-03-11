@@ -40,16 +40,36 @@ class Post extends Model
 
             $images = $this->getImagesOfPost($post['id']);
             $post['images'] = $images;
+
+            return $post;
         }
 
-        return $post ? $post : null;
+        return null;
     }
 
     public function getPostByOwner($owner) {
-        $this->db->query("SELECT * FROM posts WHERE owner = :owner AND deleted_at IS NULL");
+        $this->db->query("SELECT * FROM posts WHERE owner = :owner AND deleted_at IS NULL ORDER BY created_at DESC");
         $this->db->bind(':owner', $owner, null);
         $posts = $this->db->all();
-        return $posts ? $posts : null;
+        if ($posts) {
+            $Tag = new Tag();
+            $tags = $Tag->getAll();
+            for ($i = 0; $i < count($posts); $i++) {
+                $post_tags = $this->getTagsOfPost($posts[$i]['id']);
+                $posts[$i]['tags'] = [];
+                if ($post_tags) {
+                    foreach ($post_tags as $post_tag) {
+                        foreach ($tags as $tag) {
+                            if ($post_tag['tag_id'] == $tag['id']) {
+                                array_push($posts[$i]['tags'], $tag['NAME']);
+                            }
+                        }
+                    }
+                }
+            }
+            return $posts;
+        }
+        return null;
     }
 
     public function getTagsOfPost($post_id) {
@@ -74,18 +94,20 @@ class Post extends Model
         return $this->db->execute();
     }
 
-    public function create($params) {
+    public function create($params): ?int {
         $this->db->query("INSERT INTO posts (OWNER, title, content) VALUES (:owner, :title, :content)");
         $this->db->bind(':owner', $params['owner'], null);
         $this->db->bind(':title', $params['title'], null);
         $this->db->bind(':content', $params['content'], null);
-        $this->db->execute();
-        return $this->db->lastInsertedId();
+        if ($this->db->execute()) {
+            return $this->db->lastInsertedId();
+        }
+        return null;
     }
 
-    public function insertImage($id, $image) {
+    public function insertImage($post_id, $image) {
         $this->db->query("INSERT INTO images (post_id, url) VALUES (:post_id, :url)");
-        $this->db->bind(':post_id', $id, null);
+        $this->db->bind(':post_id', $post_id, null);
         $this->db->bind(':url', $image, null);
         return $this->db->execute();
     }

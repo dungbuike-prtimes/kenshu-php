@@ -63,11 +63,16 @@ a {
 }
 
 .form__header {
-  height: 70px;
   display: flex;
-  justify-content: center;
   align-items: center;
   border-bottom: #b5b5b5 solid 1px;
+  flex-direction: column;
+}
+
+.form__header a {
+  font-size: 14px;
+  text-decoration: underline #4ea500 solid;
+  color: #f56342;
 }
 
 .form__header-text {

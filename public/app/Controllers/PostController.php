@@ -1,75 +1,43 @@
 <?php
-include_once __DIR__.'/../Models/Post.php';
-include_once __DIR__.'/../Models/Tag.php';
-include_once __DIR__.'/../Helper/AuthHelper.php';
+include_once __DIR__ . '/../Models/Post.php';
+include_once __DIR__ . '/../Models/Tag.php';
+include_once __DIR__ . '/../Helper/AuthHelper.php';
+include_once __DIR__ . '/../Helper/FileUploadHelper.php';
 include_once 'BaseController.php';
 
 class PostController extends BaseController
 {
-    public function index() {
+    public function index()
+    {
         $owner_id = AuthHelper::getUserId();
         $Post_model = new Post();
         $posts = $Post_model->getPostByOwner($owner_id);
-        $Tag_model = new Tag();
-        $tags = $Tag_model->getAll();
-
-        // very badddddd code
-        for ($i = 0; $i < count($posts); $i++) {
-            $post_tags = $Post_model->getTagsOfPost($posts[$i]['id']);
-            $posts[$i]['tags'] = [];
-            foreach ($post_tags as $post_tag) {
-                foreach ($tags as $tag) {
-                    if ($post_tag['tag_id'] == $tag['id']) {
-                        array_push($posts[$i]['tags'], $tag['NAME']);
-                    }
-                }
-            }
-        }
 
         $data['posts'] = $posts;
-        $this->view('post/index', $message = [],  $data);
+        $this->view('post/index', $data);
     }
 
-    public function create() {
+    public function create()
+    {
         $Tag = new Tag();
         $tags = $Tag->getAll();
         $data['tags'] = $tags;
-        $this->view('post/create', $message = [], $data);
+        $this->view('post/create', $data);
     }
 
-    public function store() {
+    public function store()
+    {
         $Tag = new Tag();
         $tags = $Tag->getAll();
         $data['tags'] = $tags;
 
         if ($_POST['title'] == '' || $_POST['content'] == '') {
-            $message = [
-                'type' => 'error',
-                'status' => '400',
-                'message' => 'Title and Content is required!',
-            ];
-            return $this->view('post/create', $message, $data);
+            return $this->flash('error', '400', 'Title and Content is required!')
+                ->view('post/create', $data);
         }
-
-        $file_error = 0;
-        foreach ($_FILES["images"]["error"] as $_file_error) {
-            $file_error += $_file_error;
-        }
-
-        if (!($file_error > 0)) {
-            $allowed = array('jpg', 'jpeg', 'png', 'gif');
-            for ($i = 0; $i< count($_FILES['images']['name']); $i++) {
-                $name = basename($_FILES['images']['name'][$i]);
-                $ext = pathinfo($name, PATHINFO_EXTENSION);
-                if (!in_array($ext, $allowed)) {
-                    $message = [
-                        'type' => 'error',
-                        'status' => '400',
-                        'message' => 'File not allowed!',
-                    ];
-                    return $this->view('post/create', $message, $data);
-                }
-            }
+        if (!FileUploadHelper::fileValidate($_FILES)) {
+            return $this->flash('error', '400', 'Upload file failed!')
+                ->view('post/create', $data);
         }
 
         $owner_id = AuthHelper::getUserId();
@@ -79,34 +47,19 @@ class PostController extends BaseController
         $Post_model = new Post();
         $post = $Post_model->create($params);
 
-        if (!($file_error > 0)) {
-            $upload_dir = '/images';
-            for ($i = 0; $i< count($_FILES['images']['tmp_name']); $i++) {
-                $tmp_name = $_FILES['images']['tmp_name'][$i];
-                $name = basename($_FILES['images']['name'][$i]);
-                $ext = pathinfo($name, PATHINFO_EXTENSION);
-                $file_name = md5(time().$name);
-                $file_name = $file_name.'.'.$ext;
-                move_uploaded_file($tmp_name, __DIR__.'/../..'."$upload_dir/$file_name");
-                $Post_model->insertImage($post, "$upload_dir/$file_name");
-            }
-        }
-
+        FileUploadHelper::handleFileUpload($_FILES, $post);
 
         for ($i = 0; $i < count($_POST['tag']); $i++) {
             $Post_model->insertTag($post, $_POST['tag'][$i]);
         }
 
-        $message = [
-            'type' => 'success',
-            'status' => '200',
-            'message' => 'Create!',
-        ];
-        return $this->view('post/create', $message, $data);
+        $this->flash('success', '200', 'Create!');
+        return header('location:/posts');
 
     }
 
-    public function edit($id) {
+    public function edit($id)
+    {
         $Tag = new Tag();
         $tags = $Tag->getAll();
         $data['tags'] = $tags;
@@ -115,15 +68,16 @@ class PostController extends BaseController
         $current_user = AuthHelper::getUserId();
         $post = $Post_model->getPost($id);
 
-        if (!empty($post) && $post["OWNER"] !== $current_user) {
-            header('Location:/post/index');
+        if (empty($post) || (!empty($post) && $post["OWNER"] != $current_user)) {
+            return header('Location:/posts');
         }
 
         $data['post'] = $post;
-        $this->view('post/edit', $message = [], $data);
+        return $this->view('post/edit', $data);
     }
 
-    public function update($id) {
+    public function update($id)
+    {
         $current_user = AuthHelper::getUserId();
         $Tag = new Tag();
         $Post_model = new Post();
@@ -135,40 +89,19 @@ class PostController extends BaseController
         $post = $Post_model->getPost($id);
         $data['post'] = $post;
 
-        if (!empty($post) && $post["OWNER"] !== $current_user) {
-            header('Location:/post/index');
+        if (empty($post) || (!empty($post) && $post["OWNER"] !== $current_user)) {
+            return header('Location:/posts');
         }
 
 
         if ($_POST['title'] == '' || $_POST['content'] == '') {
-            $message = [
-                'type' => 'error',
-                'status' => '400',
-                'message' => 'Title and Content is required!',
-            ];
-            return $this->view('post/create', $message, $data);
+            return $this->flash('error', '400', 'Title and Content is required!')
+                ->view('post/create', $data);
         }
 
-        $file_error = 0;
-        foreach ($_FILES["images"]["error"] as $_file_error) {
-            $file_error += $_file_error;
-        }
-
-
-        if (!($file_error > 0)) {
-            $allowed = array('jpg', 'jpeg', 'png', 'gif');
-            for ($i = 0; $i< count($_FILES['images']['name']); $i++) {
-                $name = basename($_FILES['images']['name'][$i]);
-                $ext = pathinfo($name, PATHINFO_EXTENSION);
-                if (!in_array($ext, $allowed)) {
-                    $message = [
-                        'type' => 'error',
-                        'status' => '400',
-                        'message' => 'File not allowed!',
-                    ];
-                    return $this->view('post/create', $message, $data);
-                }
-            }
+        if (!FileUploadHelper::fileValidate($_FILES)) {
+            return $this->flash('error', '400', 'File not allowed!')
+                ->view('post/create', $data);
         }
 
         $owner_id = AuthHelper::getUserId();
@@ -183,19 +116,7 @@ class PostController extends BaseController
                 $Post_model->deleteImage($img);
             }
         }
-
-        if (!($file_error > 0)) {
-            $upload_dir = '/images';
-            for ($i = 0; $i< count($_FILES['images']['tmp_name']); $i++) {
-                $tmp_name = $_FILES['images']['tmp_name'][$i];
-                $name = basename($_FILES['images']['name'][$i]);
-                $ext = pathinfo($name, PATHINFO_EXTENSION);
-                $file_name = md5(time().$name);
-                $file_name = $file_name.'.'.$ext;
-                move_uploaded_file($tmp_name, __DIR__.'/../..'."$upload_dir/$file_name");
-                $Post_model->insertImage($id, "$upload_dir/$file_name");
-            }
-        }
+        FileUploadHelper::handleFileUpload($_FILES, $id);
 
         $post_tags = $Post_model->getTagsOfPost($id);
         foreach ($post_tags as $post_tag) {
@@ -212,48 +133,38 @@ class PostController extends BaseController
         $data['post'] = $post;
         $data['tags'] = $tags;
 
-        $message = [
-            'type' => 'success',
-            'status' => '200',
-            'message' => 'Updated!',
-        ];
-        return $this->view('post/edit', $message, $data);
+        return $this->flash("success", "200", "Updated!")->view('post/edit', $data);
     }
 
-    public function delete($id) {
+    public function delete($id)
+    {
         $current_user = AuthHelper::getUserId();
         $Post_model = new Post();
         $post = $Post_model->getPost($id);
-        if (empty($post) || (!empty($post) && $post["OWNER"] !== $current_user)) {
-            header('Location:/post/index');
+        if (empty($post) || (!empty($post) && ($post["OWNER"] != $current_user))) {
+            return header('Location:/posts');
         }
         $Post_model->deletePost($id);
 
         $posts = $Post_model->getPostByOwner($current_user);
-        $Tag_model = new Tag();
-        $tags = $Tag_model->getAll();
-
-        // very badddddd code
-        for ($i = 0; $i < count($posts); $i++) {
-            $post_tags = $Post_model->getTagsOfPost($posts[$i]['id']);
-            $posts[$i]['tags'] = [];
-            foreach ($post_tags as $post_tag) {
-                foreach ($tags as $tag) {
-                    if ($post_tag['tag_id'] == $tag['id']) {
-                        array_push($posts[$i]['tags'], $tag['NAME']);
-                    }
-                }
-            }
-        }
 
         $data['posts'] = $posts;
+        $this->flash("success", "200", "Post is deleted");
 
-        $message = [
-            'type' => 'success',
-            'status' => '200',
-            'message' => 'Post is deleted!',
-        ];
-        return $this->view('post/index', $message, $data);
+        return header('location:/posts');
+
+    }
+
+    public function show($id) {
+        $current_user = AuthHelper::getUserId();
+        $Post_model = new Post();
+        $post = $Post_model->getPost($id);
+        if (empty($post) || (!empty($post) && $post["OWNER"] !== $current_user)) {
+            return header('Location:/posts');
+        }
+        $data['post'] = $post;
+
+        return $this->view('post/show', $data);
 
     }
 }

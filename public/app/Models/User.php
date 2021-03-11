@@ -28,7 +28,7 @@ class User extends Model
         $this->db->bind(':email', $params['email'], null);
         $this->db->bind(':username', $params['username'], null);
         $this->db->bind(':phone_number', $params['phone_number'], null);
-        $this->db->bind(':password', password_hash($params['email'], PASSWORD_DEFAULT), null);
+        $this->db->bind(':password', password_hash($params['password'], PASSWORD_DEFAULT), null);
         return $this->db->execute();
     }
 

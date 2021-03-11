@@ -2,17 +2,19 @@
 <html lang="en">
 <head>
     <link rel="stylesheet" href="../../css/auth.css">
+    <link rel="stylesheet" href="../../css/styles.css">
+
 </head>
 <body>
 <div class='container'>
     <div class='form'>
         <div class='form__header'>
-            <h1 class='form__header-text'>Login</h1>
+            <h1 class='form__header-text'>Register</h1>
+            <span>I have an account already! <a href="/auth/login">Login now</a></span>
         </div>
-        <form class="form__body" method="post" action="/auth/postRegister">
-            <?php if (isset($error)) {
-                echo             '<div class="form__message">' . $error . '</div>';
-            }
+        <form class="form__body" method="post" action="/auth/register">
+            <?php
+            include_once __DIR__."/../components/message.php";
             ?>
             <div class="form__field">
                 <label class="form__field-label" for="email">Email</label>
@@ -34,7 +36,7 @@
                 <label class="form__field-label" for="confirm_password">Confirm Password</label>
                 <input class="form__field-input" placeholder="Confirm Password" type="password" name="confirm_password"/>
             </div>
-            <input type="submit" class="form__submit" value="Submit" />
+            <input type="submit" class="form__submit form__button--success" value="Register" />
         </form>
     </div>
 </div>

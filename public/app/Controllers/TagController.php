@@ -21,19 +21,14 @@ class TagController extends BaseController
                     'description' => $result['description'],
                 ]
         ];
-        $this->view('tag/edit', $message = [], $data);
+        $this->view('tag/edit', $data);
     }
 
     public function store()
     {
-        if (!isset($_POST['name'])) {
-            $message = [
-                'type' => 'error',
-                'status' => '406',
-                'message' => 'Create Fail!'
-            ];
+        if (empty($_POST['name'])) {
 
-            $this->view('tag/create', $message);;
+            $this->flash('error', '406','Tag name is required!')->view('tag/create');;
         } else {
             if (!isset($_POST['description'])) {
                 $_POST['description'] = '';
@@ -43,35 +38,17 @@ class TagController extends BaseController
             $params['description'] = $_POST['description'];
 
             if ($tag->create($params)) {
-                $message = [
-                    'type' => 'success',
-                    'status' => '201',
-                    'message' => 'Created!'
-                ];
-
-                $this->view('tag/create', $message);
+                return $this->flash('success','201','Created!')->view('tag/create');
             }
 
-            $message = [
-                'type' => 'error',
-                'status' => '400',
-                'message' => 'Unexpected Error!'
-            ];
-
-            $this->view('tag/create', $message);
+            $this->flash('error','400','Unexpected Error!')->view('tag/create');
         }
     }
 
     public function update($id)
     {
-        if (!isset($_POST['name'])) {
-            $message = [
-                'type' => 'error',
-                'status' => '406',
-                'message' => 'Create Fail!'
-            ];
-
-            $this->view('tag/create', $message);
+        if (empty($_POST['name'])) {
+            return $this->flash('error','406','Tag name is required!')->view('tag/create');
         } else {
             if (!isset($_POST['description'])) {
                 $_POST['description'] = '';
@@ -84,12 +61,6 @@ class TagController extends BaseController
             $params['description'] = $_POST['description'];
             $result = $tag->update($params);
             if ($result) {
-                $message = [
-                    'type' => 'success',
-                    'status' => '200',
-                    'message' => 'Updated!'
-                ];
-
                 $data = [
                     'tag' =>
                         [
@@ -99,16 +70,10 @@ class TagController extends BaseController
                         ]
                 ];
 
-                $this->view('tag/edit', $message, $data);
+                return $this->flash('success','200','Updated!')->view('tag/edit', $data);
             }
 
-            $message = [
-                'type' => 'error',
-                'status' => '400',
-                'message' => 'Unexpected Error!'
-            ];
-
-            $this->view('tag/edit', $message);
+            return $this->flash('error','400','Unexpected Error!')->view('tag/edit');
         }
     }
 }

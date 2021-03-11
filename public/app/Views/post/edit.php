@@ -19,7 +19,7 @@ include_once __DIR__."/../layouts/header.php";
             <div class="content-container__body">
 
                 <form id="form" class="form"
-                      action="/post/edit/<?php echo $data['post']['id']; ?>" method="post"
+                      action="/posts/<?php echo $data['post']['id']; ?>" method="post"
                       enctype="multipart/form-data">
                     <input type="hidden" name="__method" value="PUT">
                     <?php
@@ -101,7 +101,7 @@ include_once __DIR__."/../layouts/header.php";
         <h3>Are you sure to delete this post</h3>
     </div>
     <div class="modal__content">
-        <form method="post" action="/post/delete/<?php echo($data['post']['id']); ?>">
+        <form method="post" action="/posts/<?php echo($data['post']['id']); ?>">
             <input type="hidden" name="__method" value="DELETE">
             <input type="submit" class="form__button--danger" value="Sure, delete post!">
             <input type="button" class="form__button--success" value="No, keep post!">
@@ -167,7 +167,7 @@ include_once __DIR__."/../layouts/header.php";
 
     let createTag = document.getElementById('create-tag');
     createTag.addEventListener('click', () => {
-        window.location.href = '/tag/create';
+        window.location.href = '/tags/create';
     })
 
     let deleteImage = document.querySelectorAll('.delete-image');
@@ -184,7 +184,7 @@ include_once __DIR__."/../layouts/header.php";
 
     let cancelButton = document.getElementById('cancel-button');
     cancelButton.addEventListener('click', () => {
-        history.back();
+        window.location.href = '/posts'
     })
     let modal = document.getElementById("myModal");
 

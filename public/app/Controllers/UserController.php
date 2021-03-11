@@ -29,14 +29,9 @@ class userController extends BaseController
             $_SESSION['user']['username'] = $result['username'];
             $_SESSION['user']['email'] = $result['email'];
             $_SESSION['user']['id'] = $result['id'];
-            header('Location:/post/index');
+            header('Location:/posts');
         } else {
-            $message = [
-                'type' => 'error',
-                'status' => '406',
-                'message' => 'Login fail!'
-            ];
-            return $this->view('auth/login', $message);
+            return $this->flash('error','406','Login fail!')->view('auth/login');
         }
     }
 
@@ -64,29 +59,16 @@ class userController extends BaseController
 
         $user = new User;
         if ($user->isExisted($params['email'])) {
-            $message = [
-                'type' => 'error',
-                'status' => '400',
-                'message' => 'User existed! Create failed!'
-            ];
-            return $this->view('auth/register', $message);
+            return $this->flash('error','400','User existed! Create failed!')
+                ->view('auth/register');
 
         }
         if ($user->create($params)) {
-            $message = [
-                'type' => 'success',
-                'status' => '200',
-                'message' => 'Account is created!'
-            ];
-
-            return $this->view('auth/register', $message);
+            return $this->flash('success','200','Account is created!')
+                ->view('auth/register');
         } else {
-            $message = [
-                'type' => 'error',
-                'status' => '400',
-                'message' => 'Cannot create account!'
-            ];
-            return $this->view('auth/register', $message);
+            return $this->flash('error','400','Cannot create account!')
+                ->view('auth/register');
         }
     }
 }
