@@ -22,6 +22,8 @@ include_once __DIR__."/../layouts/header.php";
                       action="/posts/<?php echo $data['post']['id']; ?>" method="post"
                       enctype="multipart/form-data">
                     <input type="hidden" name="__method" value="PUT">
+                    <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token'];?>">
+
                     <?php
                     include_once __DIR__."/../components/message.php";
                     ?>
@@ -29,12 +31,12 @@ include_once __DIR__."/../layouts/header.php";
                     <div class="form__field">
                         <label class="form__label" for="title">Title</label>
                         <input type="text" class="form__input" name="title" placeholder="Post Title"
-                               value="<?php echo $data['post']['title']; ?>">
+                               value="<?php echo h($data['post']['title']); ?>">
                     </div>
                     <div class="form__field">
                         <label class="form__label" for="content">Content</label>
                         <textarea class="form__text-area" name="content" placeholder="Post content"
-                        ><?php echo $data['post']['content'];
+                        ><?php echo h($data['post']['content']);
                         ?></textarea>
                     </div>
                     <div class="form__field">
@@ -45,7 +47,7 @@ include_once __DIR__."/../layouts/header.php";
                                 {
                                     echo '<div class="form__tag-group">';
                                     echo '<input name="tags[]" type="hidden" value="' . $tag['id'] . '">';
-                                    echo '<span class="form__tag">' . $tag['name'] . '</span></div>';
+                                    echo '<span class="form__tag">' . h($tag['name']) . '</span></div>';
                                 }
                             ?>
                             <input id="create-tag" type="button" value="+ Create Tag" class="form__button--success --pull-right">
@@ -54,7 +56,7 @@ include_once __DIR__."/../layouts/header.php";
                             <option value="" selected disabled>Choose Tag</option>
                             <?php
                             foreach ($data['tags'] as $tag) {
-                                echo '<option value="'.$tag["id"].'">'.$tag["NAME"].'</option>';
+                                echo '<option value="'.$tag["id"].'">'. h($tag["NAME"]).'</option>';
                             }
                             ?>
                         </select>
@@ -67,7 +69,7 @@ include_once __DIR__."/../layouts/header.php";
                             <?php
                             foreach ($data['post']['images'] as $image) {
                                 echo '<div class="form__image-preview-box">';
-                                echo '<img src="' . $image['url'] . '">';
+                                echo '<img src="' . h($image['url']) . '">';
                                 echo '<a type="button" class="form__button--danger --bottom --center delete-image">Delete</a>';
                                 echo '<input type="hidden" value="' . $image['id'] . '"></div>';
                             }
@@ -102,6 +104,7 @@ include_once __DIR__."/../layouts/header.php";
     </div>
     <div class="modal__content">
         <form method="post" action="/posts/<?php echo($data['post']['id']); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token'];?>">
             <input type="hidden" name="__method" value="DELETE">
             <input type="submit" class="form__button--danger" value="Sure, delete post!">
             <input type="button" class="form__button--success" value="No, keep post!">

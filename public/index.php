@@ -27,6 +27,17 @@ if ($request_method == 'POST') {
     }
 }
 
+/**
+ * HTML特殊文字をエスケープする関数
+ *
+ * @param $str 対象の文字列
+ * @return 処理された文字列
+ */
+function h($str) {
+    return htmlspecialchars($str, ENT_QUOTES, 'UTF-8');
+}
+
+
 $router = new Route();
 require_once "routes.php";
 

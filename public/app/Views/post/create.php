@@ -22,7 +22,7 @@ include_once __DIR__."/../layouts/header.php";
                     <?php
                     include_once __DIR__."/../components/message.php";
                     ?>
-
+                    <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token'];?>">
                     <div class="form__field">
                         <label class="form__label" for="title">Title</label>
                         <input type="text" class="form__input" name="title" placeholder="Post Title">
@@ -40,7 +40,7 @@ include_once __DIR__."/../layouts/header.php";
                             <option value="" selected disabled>Choose Tag</option>
                             <?php
                             foreach ($data['tags'] as $tag) {
-                                echo '<option value="'.$tag["id"].'">'.$tag["NAME"].'</option>';
+                                echo '<option value="'.$tag["id"].'">'. h($tag["NAME"]).'</option>';
                             }
                             ?>
                         </select>

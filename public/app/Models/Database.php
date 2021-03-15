@@ -9,7 +9,7 @@ class Database
     private $dbPort = DB_PORT;
 
     private $error;
-    private $database;
+    public $database;
     private $statement;
 
     public function __construct()
@@ -17,7 +17,8 @@ class Database
         $conn = 'mysql:host=' . $this->dbHost . ';dbname=' . $this->dbName;
         $options = array(
             PDO::ATTR_PERSISTENT => true,
-            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION
+//            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_EMULATE_PREPARES => false
         );
         try {
             $this->database = new PDO($conn, 'root', 'root', $options);

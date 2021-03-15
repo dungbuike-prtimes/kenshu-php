@@ -44,9 +44,29 @@ class FileUploadHelper extends Helper
                 if (!empty($ext) && !in_array($ext, $allowed)) {
                     return false;
                 }
+
+                $imginfo = getimagesize($name);
+                $type = $imginfo[2];
+
+                if (!empty($ext)) {
+                    switch ($ext) {
+                        case 'gif' : {
+                            if ($type == IMAGETYPE_GIF) return true;
+                            break;
+                        }
+                        case 'jpg':
+                        case 'jpeg' : {
+                            if ($type == IMAGETYPE_JPEG) return true;
+                            break;
+                        }
+                        case 'png' : {
+                            if ($type == IMAGETYPE_PNG) return true;
+                            break;
+                        }
+                    }
+                }
             }
-            return true;
         }
-        return false;
+        return true;
     }
 }

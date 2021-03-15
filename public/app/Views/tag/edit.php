@@ -21,6 +21,7 @@ include_once __DIR__."/../layouts/header.php";
                 ?>
 
                 <form class="form--create-tag" method="post" action="/tags/<?php echo($data['tag']['id']); ?>/edit">
+                    <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token'];?>">
                     <input name="name" type="text" placeholder="Tag name" class="form__input"
                            value="<?php echo($data['tag']['name']); ?>">
                     <textarea name="description" type="text" placeholder="Tag description" class="form__text-area"><?php

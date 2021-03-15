@@ -3,10 +3,19 @@ include_once __DIR__ . '/../Models/Post.php';
 include_once __DIR__ . '/../Models/Tag.php';
 include_once __DIR__ . '/../Helper/AuthHelper.php';
 include_once __DIR__ . '/../Helper/FileUploadHelper.php';
+include_once __DIR__ . '/../Helper/InputHelper.php';
+include_once __DIR__ . '/../Helper/Csrf.php';
+
 include_once 'BaseController.php';
 
 class PostController extends BaseController
 {
+
+    function __construct()
+    {
+        parent::__construct();
+    }
+
     public function index()
     {
         $owner_id = AuthHelper::getUserId();
@@ -19,9 +28,13 @@ class PostController extends BaseController
 
     public function create()
     {
-        $Tag = new Tag();
-        $tags = $Tag->getAll();
+        $Tag_model = new Tag();
+        $tags = $Tag_model->getAll();
         $data['tags'] = $tags;
+
+        $csrf = new Csrf();
+        $data['csrf_token'] = $csrf->generateToken();
+
         $this->view('post/create', $data);
     }
 
@@ -31,42 +44,68 @@ class PostController extends BaseController
         $tags = $Tag->getAll();
         $data['tags'] = $tags;
 
-        if ($_POST['title'] == '' || $_POST['content'] == '') {
-            return $this->flash('error', '400', 'Title and Content is required!')
+        $csrf = new Csrf();
+        $csrf->verify();
+
+        if (empty($_POST['title']) || empty($_POST['content'] == '')) {
+            return $this->message('error', '400', 'Title and Content is required!')
                 ->view('post/create', $data);
         }
         if (!FileUploadHelper::fileValidate($_FILES)) {
-            return $this->flash('error', '400', 'Upload file failed!')
+            return $this->message('error', '400', 'Upload file failed!')
                 ->view('post/create', $data);
         }
 
         $owner_id = AuthHelper::getUserId();
-        $params['owner'] = $owner_id;
-        $params['title'] = $_POST['title'];
-        $params['content'] = $_POST['content'];
-        $Post_model = new Post();
-        $post = $Post_model->create($params);
 
-        FileUploadHelper::handleFileUpload($_FILES, $post);
-
-        for ($i = 0; $i < count($_POST['tag']); $i++) {
-            $Post_model->insertTag($post, $_POST['tag'][$i]);
+        try {
+            $params['owner'] = InputHelper::int($owner_id);
+            $params['title'] = InputHelper::str($_POST['title']);
+            $params['content'] = InputHelper::str($_POST['content']);
+        } catch (Exception $e) {
+            $this->message('error', '400', 'Invalid input!');
+            return header('location:/posts');
         }
 
-        $this->flash('success', '200', 'Create!');
+        $Post_model = new Post();
+        PDO::beginTransaction();
+        try {
+            $post = $Post_model->create($params);
+            FileUploadHelper::handleFileUpload($_FILES, $post);
+
+            for ($i = 0; $i < count($_POST['tag']); $i++) {
+                $Post_model->insertTag($post, h($_POST['tag'][$i]));
+            }
+        } catch (PDOException $e) {
+            PDO::rollback();
+            $this->message('error', '500', 'Database error. Create failed!');
+            return header('location:/posts');
+
+        }
+        PDO::commit();
+
+        $this->message('success', '200', 'Create!');
         return header('location:/posts');
 
     }
 
     public function edit($id)
     {
+        try {
+            $params['owner'] = InputHelper::int($id);
+        } catch (Exception $e) {
+            $this->message('error', $e->getCode(), $e->getMessage());
+            return header('location:/posts');
+        }
+        $csrf = new Csrf();
+        $data['csrf_token'] = $csrf->generateToken();
         $Tag = new Tag();
         $tags = $Tag->getAll();
         $data['tags'] = $tags;
 
         $Post_model = new Post();
         $current_user = AuthHelper::getUserId();
-        $post = $Post_model->getPost($id);
+        $post = $Post_model->getPost(h($id));
 
         if (empty($post) || (!empty($post) && $post["OWNER"] != $current_user)) {
             return header('Location:/posts');
@@ -78,6 +117,15 @@ class PostController extends BaseController
 
     public function update($id)
     {
+        try {
+            $params['owner'] = InputHelper::int($id);
+        } catch (Exception $e) {
+            $this->message('error', $e->getCode(), $e->getMessage());
+            return header('location:/posts');
+        }
+        $csrf = new Csrf();
+        $csrf->verify();
+
         $current_user = AuthHelper::getUserId();
         $Tag = new Tag();
         $Post_model = new Post();
@@ -95,36 +143,51 @@ class PostController extends BaseController
 
 
         if ($_POST['title'] == '' || $_POST['content'] == '') {
-            return $this->flash('error', '400', 'Title and Content is required!')
-                ->view('post/create', $data);
+            return $this->message('error', '400', 'Title and Content is required!')
+                ->view('post/edit', $data);
         }
-
         if (!FileUploadHelper::fileValidate($_FILES)) {
-            return $this->flash('error', '400', 'File not allowed!')
-                ->view('post/create', $data);
+            return $this->message('error', '400', 'File not allowed!')
+                ->view('post/edit', $data);
         }
 
         $owner_id = AuthHelper::getUserId();
-        $params['owner'] = $owner_id;
-        $params['title'] = $_POST['title'];
-        $params['content'] = $_POST['content'];
-        $post = $Post_model->update($id, $params);
 
+        try {
+            $params['owner'] = InputHelper::int($owner_id);
+            $params['title'] = InputHelper::str($_POST['title']);
+            $params['content'] = InputHelper::str($_POST['content']);
+        } catch (Exception $e) {
+            $this->message('error', '400', 'Invalid input!');
+            return header('location:/posts');
+        }
 
-        if (isset($_POST['deleteImage'])) {
-            foreach ($_POST['deleteImage'] as $img) {
-                $Post_model->deleteImage($img);
+        $db = $Post_model->db->database;
+        try {
+            $db->beginTransaction();
+            $post = $Post_model->update($id, $params);
+            if (isset($_POST['deleteImage'])) {
+                foreach ($_POST['deleteImage'] as $img) {
+                    $Post_model->deleteImage(h($img));
+                }
             }
-        }
-        FileUploadHelper::handleFileUpload($_FILES, $id);
+            FileUploadHelper::handleFileUpload($_FILES, $id);
 
-        $post_tags = $Post_model->getTagsOfPost($id);
-        foreach ($post_tags as $post_tag) {
-            $Post_model->deletePostTag($post_tag['id']);
-        }
+            $post_tags = $Post_model->getTagsOfPost($id);
+            foreach ($post_tags as $post_tag) {
+                $Post_model->deletePostTag($post_tag['id']);
+            }
 
-        for ($i = 0; $i < count($_POST['tags']); $i++) {
-            $Post_model->insertTag($id, $_POST['tags'][$i]);
+            for ($i = 0; $i < count($_POST['tags']); $i++) {
+                $Post_model->insertTag($id, $_POST['tags'][$i]);
+            }
+            var_dump($db->inTransaction());
+//            $db->commit();
+        } catch (PDOException $e) {
+//            $db->rollBack();
+            $this->message('error', '500', 'Database error. Create failed!'. $e);
+            return header('location:/posts');
+
         }
 
         $data = [];
@@ -133,11 +196,20 @@ class PostController extends BaseController
         $data['post'] = $post;
         $data['tags'] = $tags;
 
-        return $this->flash("success", "200", "Updated!")->view('post/edit', $data);
+        return $this->message("success", "200", "Updated!")->view('post/edit', $data);
     }
 
     public function delete($id)
     {
+        try {
+            $params['owner'] = InputHelper::int($id);
+        } catch (Exception $e) {
+            $this->message('error', $e->getCode(), $e->getMessage());
+            return header('location:/posts');
+        }
+        $csrf = new Csrf();
+        $csrf->verify();
+
         $current_user = AuthHelper::getUserId();
         $Post_model = new Post();
         $post = $Post_model->getPost($id);
@@ -149,13 +221,25 @@ class PostController extends BaseController
         $posts = $Post_model->getPostByOwner($current_user);
 
         $data['posts'] = $posts;
-        $this->flash("success", "200", "Post is deleted");
+        $this->message("success", "200", "Post is deleted");
 
         return header('location:/posts');
 
     }
 
-    public function show($id) {
+    public function show($id)
+    {
+
+        $csrf = new Csrf();
+        $data['csrf_token'] = $csrf->generateToken();
+
+        try {
+            $params['owner'] = InputHelper::int($id);
+        } catch (Exception $e) {
+            $this->message('error', $e->getCode(), $e->getMessage());
+            return header('location:/posts');
+        }
+
         $current_user = AuthHelper::getUserId();
         $Post_model = new Post();
         $post = $Post_model->getPost($id);

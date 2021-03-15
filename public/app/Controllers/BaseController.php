@@ -1,14 +1,12 @@
 <?php
-
+include_once '../Helper/InputHelper.php';
 
 class BaseController
 {
-    protected $model;
     protected $view;
 
     function __construct()
     {
-
     }
 
 
@@ -18,7 +16,7 @@ class BaseController
         return $this;
     }
 
-    public function flash($type, $status, $message)
+    public function message($type, $status, $message)
     {
         $_SESSION['type'] = $type;
         $_SESSION['message'] = $message;

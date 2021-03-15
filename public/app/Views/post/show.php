@@ -14,7 +14,7 @@ include_once __DIR__."/../layouts/header.php";
     <div class="main__wrapper">
         <div class="content-container">
             <div class="content-container__header">
-                <h2><?php echo $data['post']['title']; ?></h2>
+                <h2><?php echo h($data['post']['title']); ?></h2>
 
             </div>
             <div class="content-container__body">
@@ -25,13 +25,13 @@ include_once __DIR__."/../layouts/header.php";
                     ?>
 
                     <div class="form__field">
-                        <p><?php echo $data['post']['content'];
+                        <p><?php echo h($data['post']['content']);
                             ?></p>
                         <div class="form__image-preview">
                             <?php
                             foreach ($data['post']['images'] as $image) {
                                 echo '<div class="form__image-preview-box">';
-                                echo '<img src="' . $image['url'] . '">';
+                                echo '<img src="' . h($image['url']) . '">';
                                 echo '</div>';
                             }
                             ?>
@@ -42,7 +42,7 @@ include_once __DIR__."/../layouts/header.php";
                             {
                                 echo '<div class="form__tag-group">';
                                 echo '<input name="tags[]" type="hidden" value="' . $tag['id'] . '">';
-                                echo '<span class="form__tag">' . $tag['name'] . '</span></div>';
+                                echo '<span class="form__tag">' . h($tag['name']) . '</span></div>';
                             }
                             ?>
                         </div>
@@ -50,7 +50,7 @@ include_once __DIR__."/../layouts/header.php";
                     </div>
                     <div class="form__button-group">
                         <input id="cancel-button" type="button" class="form__button--cancel" value="Back">
-                        <a type="button" href="/posts/<?php echo($data['post']['id']); ?>/edit"
+                        <a type="button" href="/posts/<?php echo(h($data['post']['id'])); ?>/edit"
                            class="form__button--success --pull-right">Edit Post</a>
                         <input id="delete-button" type="button" class="form__button--danger --pull-right" value="Delete this post">
                     </div>
@@ -77,6 +77,7 @@ include_once __DIR__."/../layouts/header.php";
     </div>
     <div class="modal__content">
         <form method="post" action="/posts/<?php echo($data['post']['id']); ?>">
+            <input type="hidden" name="csrf_token" value="<?php echo $data['csrf_token'];?>">
             <input type="hidden" name="__method" value="DELETE">
             <input type="submit" class="form__button--danger" value="Sure, delete post!">
             <input type="button" class="form__button--success" value="No, keep post!">

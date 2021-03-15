@@ -5,7 +5,7 @@ $router->get('/auth/login', "UserController@login");
 $router->post('/auth', "UserController@auth");
 $router->get('/auth/logout', "UserController@logout", AUTH_REQUIRED);
 $router->get('/auth/register', "UserController@register");
-$router->post('/auth/register', "UserController@create");
+$router->post('/auth/register', "UserController@store");
 
 
 $router->get('/tags/create', "TagController@create", AUTH_REQUIRED);

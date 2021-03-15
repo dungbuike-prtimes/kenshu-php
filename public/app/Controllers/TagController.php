@@ -1,16 +1,36 @@
 <?php
 require_once __DIR__ . '/../Models/Tag.php';
 require_once 'BaseController.php';
+include_once __DIR__ . '/../Helper/InputHelper.php';
+include_once __DIR__ . '/../Helper/Csrf.php';
+
 
 class TagController extends BaseController
 {
+    function __construct()
+    {
+        parent::__construct();
+    }
+
     public function create()
     {
-        return $this->view('tag/create');
+        $csrf = new Csrf();
+        $data['csrf_token'] = $csrf->generateToken();
+
+        return $this->view('tag/create', $data);
     }
 
     public function edit($id)
     {
+        try {
+            $params['owner'] = InputHelper::int($id);
+        } catch (Exception $e) {
+            $this->message('error', $e->getCode(), $e->getMessage());
+            return header('location:/posts');
+        }
+        $csrf = new Csrf();
+        $data['csrf_token'] = $csrf->generateToken();
+
         $tag = new Tag();
         $result = $tag->getById($id);
         $data = [
@@ -26,29 +46,45 @@ class TagController extends BaseController
 
     public function store()
     {
-        if (empty($_POST['name'])) {
+        $csrf = new Csrf();
+        $csrf->verify();
 
-            $this->flash('error', '406','Tag name is required!')->view('tag/create');;
+        if (empty($_POST['name'])) {
+            $this->message('error', '406','Tag name is required!')->view('tag/create');;
         } else {
             if (!isset($_POST['description'])) {
                 $_POST['description'] = '';
             }
             $tag = new Tag();
-            $params['name'] = $_POST['name'];
-            $params['description'] = $_POST['description'];
-
-            if ($tag->create($params)) {
-                return $this->flash('success','201','Created!')->view('tag/create');
+            try {
+                $params['name'] = InputHelper::str($_POST['name']);
+                $params['description'] = InputHelper::str($_POST['description']);
+            } catch (Exception $e) {
+                $this->message('error', $e->getCode(), $e->getMessage());
+                return header('location:/posts');
             }
 
-            $this->flash('error','400','Unexpected Error!')->view('tag/create');
+            if ($tag->create($params)) {
+                return $this->message('success','201','Created!')->view('tag/create');
+            }
+            $this->message('error','400','Unexpected Error!')->view('tag/create');
         }
     }
 
     public function update($id)
     {
+        $csrf = new Csrf();
+        $csrf->verify();
+
+        try {
+            $params['owner'] = InputHelper::int($id);
+        } catch (Exception $e) {
+            $this->message('error', $e->getCode(), $e->getMessage());
+            return header('location:/posts');
+        }
+
         if (empty($_POST['name'])) {
-            return $this->flash('error','406','Tag name is required!')->view('tag/create');
+            return $this->message('error','406','Tag name is required!')->view('tag/create');
         } else {
             if (!isset($_POST['description'])) {
                 $_POST['description'] = '';
@@ -57,8 +93,13 @@ class TagController extends BaseController
             $result = $tag->getById($id);
 
             $params['id'] = $result['id'];
-            $params['name'] = $_POST['name'];
-            $params['description'] = $_POST['description'];
+            try {
+                $params['name'] = InputHelper::str($_POST['name']);
+                $params['description'] = InputHelper::str($_POST['description']);
+            } catch (Exception $e) {
+                $this->message('error', '400', 'Invalid input!');
+                return header('location:/posts');
+            }
             $result = $tag->update($params);
             if ($result) {
                 $data = [
@@ -70,10 +111,10 @@ class TagController extends BaseController
                         ]
                 ];
 
-                return $this->flash('success','200','Updated!')->view('tag/edit', $data);
+                return $this->message('success','200','Updated!')->view('tag/edit', $data);
             }
 
-            return $this->flash('error','400','Unexpected Error!')->view('tag/edit');
+            return $this->message('error','400','Unexpected Error!')->view('tag/edit');
         }
     }
 }
