@@ -42,15 +42,9 @@ include_once __DIR__."/../layouts/header.php";
                 </ul>
             </div>
         </div>
-        <div class="side-container">
-            <div class="side-container__header">
-                <h2>Side Content</h2>
-            </div>
-            <div class="side-container__body">
-                <h3 class="username">Hello Nekko</h3>
-                <p class="email">nekko@prtimes.co.jp</p>
-            </div>
-        </div>
+        <?php
+        include_once __DIR__.'/../layouts/side-content.php';
+        ?>
     </div>
 </div>
 </body>

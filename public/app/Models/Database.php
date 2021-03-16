@@ -2,26 +2,20 @@
 require_once __DIR__.'/../../config/database.php';
 class Database
 {
-    private $dbHost = DB_HOST;
-    private $dbUser = DB_USER;
-    private $dbPass = DB_PASS;
-    private $dbName = DB_NAME;
-    private $dbPort = DB_PORT;
-
     private $error;
     public $database;
     private $statement;
 
     public function __construct()
     {
-        $conn = 'mysql:host=' . $this->dbHost . ';dbname=' . $this->dbName;
+        $conn = 'mysql:host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_NAME');
         $options = array(
             PDO::ATTR_PERSISTENT => true,
-//            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
+            PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_EMULATE_PREPARES => false
         );
         try {
-            $this->database = new PDO($conn, 'root', 'root', $options);
+            $this->database = new PDO($conn, getenv('DB_USER'), getenv('DB_PASS'), $options);
         } catch (PDOException $e) {
             $this->error = $e->getMessage();
             echo $e;
