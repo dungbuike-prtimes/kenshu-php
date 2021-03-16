@@ -22,25 +22,8 @@ class Post extends Model
         $post = $this->db->first();
 
         if ($post) {
-            $Tag = new Tag();
-            $tags = $Tag->getAll();
-            $post['tags'] = [];
-            $post_tags = $this->getTagsOfPost($post['id']);
-            foreach ($post_tags as $post_tag) {
-                foreach ($tags as $tag) {
-                    if ($post_tag['tag_id'] == $tag['id']) {
-                        $_tag = [
-                            'id' => $tag['id'],
-                            'name' => $tag['NAME']
-                        ];
-                        array_push($post['tags'], $_tag);
-                    }
-                }
-            }
-
-            $images = $this->getImagesOfPost($post['id']);
-            $post['images'] = $images;
-
+            $post['tags'] = $this->getTagsOfPost($post['id']);
+            $post['images'] = $this->getImagesOfPost($post['id']);
             return $post;
         }
 
@@ -48,24 +31,14 @@ class Post extends Model
     }
 
     public function getPostByOwner($owner) {
-        $this->db->query("SELECT * FROM posts WHERE owner = :owner AND deleted_at IS NULL ORDER BY created_at DESC");
+        $this->db->query("SELECT * FROM posts WHERE owner = :owner AND deleted_at IS NULL 
+                                ORDER BY created_at DESC");
         $this->db->bind(':owner', $owner, null);
         $posts = $this->db->all();
         if ($posts) {
-            $Tag = new Tag();
-            $tags = $Tag->getAll();
             for ($i = 0; $i < count($posts); $i++) {
-                $post_tags = $this->getTagsOfPost($posts[$i]['id']);
-                $posts[$i]['tags'] = [];
-                if ($post_tags) {
-                    foreach ($post_tags as $post_tag) {
-                        foreach ($tags as $tag) {
-                            if ($post_tag['tag_id'] == $tag['id']) {
-                                array_push($posts[$i]['tags'], $tag['NAME']);
-                            }
-                        }
-                    }
-                }
+                $posts[$i]['tags'] = $this->getTagsOfPost($posts[$i]['id']);
+                $posts[$i]['images'] = $this->getImagesOfPost($posts[$i]['id']);
             }
             return $posts;
         }
@@ -73,14 +46,18 @@ class Post extends Model
     }
 
     public function getTagsOfPost($post_id) {
-        $this->db->query("SELECT * FROM post_tag WHERE post_id = :post_id AND deleted_at IS NULL");
+        $this->db->query("SELECT tags.id, tags.NAME as name FROM `posts` JOIN tags, post_tag 
+                                WHERE posts.id = post_tag.post_id AND post_tag.tag_id = tags.id 
+                                  AND posts.id = :post_id");
         $this->db->bind(':post_id', $post_id, null);
         $tags = $this->db->all();
         return $tags ? $tags : null;
     }
 
     public function getImagesOfPost($post_id) {
-        $this->db->query("SELECT * FROM images WHERE post_id = :post_id AND deleted_at IS NULL");
+        $this->db->query("SELECT images.id, images.url FROM `posts` JOIN images 
+                                    WHERE posts.id = images.post_id AND posts.id = :post_id 
+                                      AND images.deleted_at IS NULL");
         $this->db->bind(':post_id', $post_id, null);
         $images = $this->db->all();
         return $images ? $images : null;
@@ -125,9 +102,10 @@ class Post extends Model
         };
     }
 
-    public function deletePostTag($id) {
-        $this->db->query("DELETE FROM post_tag WHERE id = :id");
-        $this->db->bind(':id', $id, null);
+    public function deletePostTag($post_id, $tag_id) {
+        $this->db->query("DELETE FROM post_tag WHERE post_id = :post_id AND tag_id = :tag_id");
+        $this->db->bind(':post_id', $post_id, null);
+        $this->db->bind(':tag_id', $tag_id, null);
         if (!$this->db->execute()) {
             throw new PDOException("Delete tags failed!");
         };

@@ -163,7 +163,7 @@ class PostController extends BaseController
             FileUploadHelper::handleFileUpload($_FILES, $id, $Post_model);
             $post_tags = $Post_model->getTagsOfPost($id);
             foreach ($post_tags as $post_tag) {
-                $Post_model->deletePostTag($post_tag['id']);
+                $Post_model->deletePostTag($id, $post_tag['id']);
             }
             for ($i = 0; $i < count($_POST['tags']); $i++) {
                 $Post_model->insertTag($id, $_POST['tags'][$i]);

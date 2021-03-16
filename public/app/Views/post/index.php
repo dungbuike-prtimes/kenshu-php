@@ -34,7 +34,7 @@ include_once __DIR__."/../layouts/header.php";
                         <span class="post__content">' . h($post["content"]) .'</span>
                         <div class="post__tag-box">';
                         foreach ($post['tags'] as $tag) {
-                            echo '<span class="form__tag">' . h($tag) . '</span>';
+                            echo '<span class="form__tag">' . h($tag['name']) . '</span>';
                         }
                         echo '</div></li>';
                     }
