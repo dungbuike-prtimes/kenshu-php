@@ -5,8 +5,7 @@ include_once __DIR__ . '/../Models/Post.php';
 class FileUploadHelper extends Helper
 {
 
-    public static function handleFileUpload($file, $post_id) {
-        $Post_model = new Post();
+    public static function handleFileUpload($file, $post_id, $Post_model) {
 
         $file_error = 0;
         foreach ($file["images"]["error"] as $_file_error) {
@@ -25,7 +24,6 @@ class FileUploadHelper extends Helper
                 $Post_model->insertImage($post_id, "$upload_dir/$file_name");
             }
         }
-
     }
 
     public static function fileValidate($file):bool {

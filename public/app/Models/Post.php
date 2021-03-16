@@ -91,7 +91,9 @@ class Post extends Model
         $this->db->bind(':id', $id, null);
         $this->db->bind(':title', $params['title'], null);
         $this->db->bind(':content', $params['content'], null);
-        return $this->db->execute();
+        if($this->db->execute()) {
+            throw new PDOException("Update post failed!");
+        };
     }
 
     public function create($params): ?int {
@@ -102,49 +104,63 @@ class Post extends Model
         if ($this->db->execute()) {
             return $this->db->lastInsertedId();
         }
-        return null;
+        throw new PDOException("Create failed!");
     }
 
     public function insertImage($post_id, $image) {
         $this->db->query("INSERT INTO images (post_id, url) VALUES (:post_id, :url)");
         $this->db->bind(':post_id', $post_id, null);
         $this->db->bind(':url', $image, null);
-        return $this->db->execute();
+        if (!$this->db->execute()) {
+            throw new PDOException("Insert image failed!");
+        };
     }
 
     public function insertTag($id, $tag) {
         $this->db->query("INSERT INTO post_tag (post_id, tag_id) VALUES (:post_id, :tag_id)");
         $this->db->bind(':post_id', $id, null);
         $this->db->bind(':tag_id', $tag, null);
-        return $this->db->execute();
+        if (!$this->db->execute()) {
+            throw new PDOException("Insert tags failed!");
+        };
     }
 
     public function deletePostTag($id) {
         $this->db->query("DELETE FROM post_tag WHERE id = :id");
         $this->db->bind(':id', $id, null);
-        $this->db->execute();
+        if (!$this->db->execute()) {
+            throw new PDOException("Delete tags failed!");
+        };
     }
 
     public function deleteImage($id) {
         $this->db->query("DELETE FROM images WHERE id = :id");
         $this->db->bind(':id', $id, null);
-        $this->db->execute();
+        if(!$this->db->execute()) {
+            throw new PDOException("Delete image failed");
+        };
     }
 
     public function deletePost($id) {
         $this->db->query("UPDATE images SET deleted_at = :deleted_at WHERE post_id = :id");
         $this->db->bind(':id', $id, null);
         $this->db->bind(':deleted_at', date("Y-m-d H:i:s"), null);
-        $this->db->execute();
+        if(!$this->db->execute()) {
+            throw new PDOException("An error occurred when remove image, Delete post failed!");
+        };
 
         $this->db->query("UPDATE post_tag SET deleted_at = :deleted_at WHERE post_id = :id");
         $this->db->bind(':id', $id, null);
         $this->db->bind(':deleted_at', date("Y-m-d H:i:s"), null);
-        $this->db->execute();
+        if(!$this->db->execute()) {
+            throw new PDOException("An error occurred when remove tag, Delete post failed!");
+        };
 
         $this->db->query("UPDATE posts SET deleted_at = :deleted_at WHERE id = :id");
         $this->db->bind(':id', $id, null);
         $this->db->bind(':deleted_at', date("Y-m-d H:i:s"), null);
-        $this->db->execute();
+        if (!$this->db->execute()) {
+            throw new PDOException("Delete post failed!");
+        };
     }
 }

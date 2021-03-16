@@ -3,7 +3,7 @@
 
 class Csrf extends Helper
 {
-    public function generateToken() {
+    public static function generateToken() {
         session_start();
         $toke_byte = openssl_random_pseudo_bytes(16);
         $csrf_token = bin2hex($toke_byte);
@@ -11,9 +11,10 @@ class Csrf extends Helper
         return $csrf_token;
     }
 
-    public function verify() {
+    public static function verify() {
         if (isset($_POST["csrf_token"])
             && $_POST["csrf_token"] === $_SESSION['csrf_token']) {
+            unset($_SESSION['csrf_token']);
             return true;
         } else {
             return header('Location:/');

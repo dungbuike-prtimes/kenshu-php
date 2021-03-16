@@ -47,11 +47,13 @@ class PostController extends BaseController
         $csrf = new Csrf();
         $csrf->verify();
 
-        if (empty($_POST['title']) || empty($_POST['content'] == '')) {
+        if (empty($_POST['title']) || empty($_POST['content'])) {
+            $data['csrf_token'] = $csrf->generateToken();
             return $this->message('error', '400', 'Title and Content is required!')
                 ->view('post/create', $data);
         }
         if (!FileUploadHelper::fileValidate($_FILES)) {
+            $data['csrf_token'] = $csrf->generateToken();
             return $this->message('error', '400', 'Upload file failed!')
                 ->view('post/create', $data);
         }
@@ -63,26 +65,28 @@ class PostController extends BaseController
             $params['title'] = InputHelper::str($_POST['title']);
             $params['content'] = InputHelper::str($_POST['content']);
         } catch (Exception $e) {
-            $this->message('error', '400', 'Invalid input!');
-            return header('location:/posts');
+            $data['csrf_token'] = $csrf->generateToken();
+            $this->message('error', '400', 'Invalid input!')
+                ->view('post/create', $data);
         }
 
         $Post_model = new Post();
-        PDO::beginTransaction();
+        $db = $Post_model->db->database;
         try {
+            $db->beginTransaction();
             $post = $Post_model->create($params);
-            FileUploadHelper::handleFileUpload($_FILES, $post);
+            FileUploadHelper::handleFileUpload($_FILES, $post, $Post_model);
 
             for ($i = 0; $i < count($_POST['tag']); $i++) {
                 $Post_model->insertTag($post, h($_POST['tag'][$i]));
             }
+            $db->commit();
         } catch (PDOException $e) {
-            PDO::rollback();
+            $db->rollBack();
             $this->message('error', '500', 'Database error. Create failed!');
             return header('location:/posts');
 
         }
-        PDO::commit();
 
         $this->message('success', '200', 'Create!');
         return header('location:/posts');
@@ -171,7 +175,8 @@ class PostController extends BaseController
                     $Post_model->deleteImage(h($img));
                 }
             }
-            FileUploadHelper::handleFileUpload($_FILES, $id);
+
+            FileUploadHelper::handleFileUpload($_FILES, $id, $Post_model);
 
             $post_tags = $Post_model->getTagsOfPost($id);
             foreach ($post_tags as $post_tag) {
@@ -181,11 +186,10 @@ class PostController extends BaseController
             for ($i = 0; $i < count($_POST['tags']); $i++) {
                 $Post_model->insertTag($id, $_POST['tags'][$i]);
             }
-            var_dump($db->inTransaction());
-//            $db->commit();
+            $db->commit();
         } catch (PDOException $e) {
-//            $db->rollBack();
-            $this->message('error', '500', 'Database error. Create failed!'. $e);
+            $db->rollBack();
+            $this->message('error', '500', 'Database error. Update failed!');
             return header('location:/posts');
 
         }
@@ -195,6 +199,9 @@ class PostController extends BaseController
 
         $data['post'] = $post;
         $data['tags'] = $tags;
+        $csrf = new Csrf();
+        $data['csrf_token'] = $csrf->generateToken();
+
 
         return $this->message("success", "200", "Updated!")->view('post/edit', $data);
     }
@@ -216,7 +223,18 @@ class PostController extends BaseController
         if (empty($post) || (!empty($post) && ($post["OWNER"] != $current_user))) {
             return header('Location:/posts');
         }
-        $Post_model->deletePost($id);
+
+        $db = $Post_model->db->database;
+        try {
+            $db->beginTransaction();
+            $Post_model->deletePost($id);
+            $db->commit();
+        } catch (PDOException $e) {
+            $db->rollBack();
+            $this->message('error', '500', 'Database error. Delete failed!');
+            return header('location:/posts');
+
+        }
 
         $posts = $Post_model->getPostByOwner($current_user);
 
