@@ -16,7 +16,6 @@ class TagController extends BaseController
     {
         $csrf = new Csrf();
         $data['csrf_token'] = $csrf->generateToken();
-
         return $this->view('tag/create', $data);
     }
 
@@ -32,42 +31,35 @@ class TagController extends BaseController
         $data['csrf_token'] = $csrf->generateToken();
 
         $tag = new Tag();
-        $result = $tag->getById($id);
-        $data = [
-            'tag' =>
-                [
-                    'id' => $result['id'],
-                    'name' => $result['NAME'],
-                    'description' => $result['description'],
-                ]
-        ];
-        $this->view('tag/edit', $data);
+        $data['tag'] = $tag->getById($id);
+        return $this->view('tag/edit', $data);
     }
 
     public function store()
     {
         $csrf = new Csrf();
         $csrf->verify();
+        $Tag_model = new Tag();
+        $params = [];
+        try {
+            $params['name'] = InputHelper::str($_POST['name']);
+            $params['description'] = InputHelper::str($_POST['description']);
+        } catch (Exception $e) {
+            $data['csrf_token'] = $csrf->generateToken();
+            return $this->message('error', $e->getCode(), $e->getMessage())->view('tag/create');
+        }
 
-        if (empty($_POST['name'])) {
-            $this->message('error', '406','Tag name is required!')->view('tag/create');;
-        } else {
-            if (!isset($_POST['description'])) {
-                $_POST['description'] = '';
-            }
-            $tag = new Tag();
-            try {
-                $params['name'] = InputHelper::str($_POST['name']);
-                $params['description'] = InputHelper::str($_POST['description']);
-            } catch (Exception $e) {
-                $this->message('error', $e->getCode(), $e->getMessage());
-                return header('location:/posts');
-            }
-
-            if ($tag->create($params)) {
-                return $this->message('success','201','Created!')->view('tag/create');
-            }
-            $this->message('error','400','Unexpected Error!')->view('tag/create');
+        $db = $Tag_model->db->database;
+        try {
+            $db->beginTransaction();
+            $Tag_model->create($params);
+            $db->commit();
+            $data['csrf_token'] = $csrf->generateToken();
+            return $this->message('success', '201', 'Created!')->view('tag/create');
+        } catch (PDOException $e) {
+            $db->rollBack();
+            $data['csrf_token'] = $csrf->generateToken();
+            return $this->message('error', '500', $e->getMessage())->view('tag/create');
         }
     }
 
@@ -83,38 +75,31 @@ class TagController extends BaseController
             return header('location:/posts');
         }
 
-        if (empty($_POST['name'])) {
-            return $this->message('error','406','Tag name is required!')->view('tag/create');
-        } else {
-            if (!isset($_POST['description'])) {
-                $_POST['description'] = '';
-            }
-            $tag = new Tag();
-            $result = $tag->getById($id);
+        $Tag_model = new Tag();
+        $result = $Tag_model->getById($id);
 
-            $params['id'] = $result['id'];
-            try {
-                $params['name'] = InputHelper::str($_POST['name']);
-                $params['description'] = InputHelper::str($_POST['description']);
-            } catch (Exception $e) {
-                $this->message('error', '400', 'Invalid input!');
-                return header('location:/posts');
-            }
-            $result = $tag->update($params);
-            if ($result) {
-                $data = [
-                    'tag' =>
-                        [
-                            'id' => $result['id'],
-                            'name' => $result['NAME'],
-                            'description' => $result['description'],
-                        ]
-                ];
+        $params['id'] = $result['id'];
+        try {
+            $params['name'] = InputHelper::str($_POST['name']);
+            $params['description'] = InputHelper::str($_POST['description']);
+        } catch (Exception $e) {
+            $data['tag'] = $Tag_model->getById($id);
+            $data['csrf_token'] = $csrf->generateToken();
+            return $this->message('error', '400', 'Invalid input!')->view('tag/edit', $data);
+        }
 
-                return $this->message('success','200','Updated!')->view('tag/edit', $data);
-            }
+        $db = $Tag_model->db->database;
+        try {
+            $db->beginTransaction();
+            $data['tag'] = $Tag_model->update($params);
+            $db->commit();
+            $data['csrf_token'] = $csrf->generateToken();
+            return $this->message('success', '200', 'Updated!')->view('tag/edit', $data);
 
-            return $this->message('error','400','Unexpected Error!')->view('tag/edit');
+        } catch (PDOException $e) {
+            $db->rollBack();
+            $data['csrf_token'] = $csrf->generateToken();
+            return $this->message('error', '500', $e->getMessage())->view('tag/edit');
         }
     }
 }

@@ -16,7 +16,7 @@ class UserController extends BaseController
     public function login()
     {
         if (AuthHelper::checkAuth()) {
-            header("location:/post/index");
+            header("location:/posts");
         }
         return $this->view('auth/login');
     }
@@ -32,10 +32,9 @@ class UserController extends BaseController
         }
 
         $user = new User();
-        $result = $user->auth($params['email'], $params['password']);
+        $result = $user->verifyUser($params['email'], $params['password']);
 
         if ($result) {
-            session_start();
             session_regenerate_id(true);
             $_SESSION['user']['username'] = $result['username'];
             $_SESSION['user']['email'] = $result['email'];
@@ -48,22 +47,19 @@ class UserController extends BaseController
 
     public function logout() {
         unset($_SESSION['user']);
-        header('location:/auth/login');
+        return header('location:/auth/login');
     }
 
     public function register()
     {
         if (AuthHelper::checkAuth()) {
-            header("location:/post/index");
+            return header("location:/posts");
         }
         return $this->view('auth/register');
     }
 
     public function store()
     {
-        $csrf = new Csrf();
-        $data['csrf_token'] = $csrf->generateToken();
-
         try {
             $params['email'] = InputHelper::email($_POST['email']);
             $params['username'] = InputHelper::str($_POST['username']);
@@ -75,7 +71,7 @@ class UserController extends BaseController
             return header('location:/posts');
         }
         if ($params['password'] != $params['confirm_password']) {
-            $this->message('error', '400', 'Password is no confirmed!')
+            $this->message('error', '400', 'Password is not confirmed!')
                 ->view('auth/register');
         }
 
@@ -83,13 +79,17 @@ class UserController extends BaseController
         if ($user->isExisted($params['email'])) {
             return $this->message('error','400','User existed! Create failed!')
                 ->view('auth/register');
-
         }
-        if ($user->create($params)) {
-            return $this->message('success','200','Account is created!')
+        $db = $user->db->database;
+        try {
+            $db->beginTransaction();
+            $user->create($params);
+            $db->commit();
+            return $this->message('success','200','Account is created successfully!')
                 ->view('auth/register');
-        } else {
-            return $this->message('error','400','Cannot create account!')
+        } catch (PDOException $e) {
+            $db->rollBack();
+            return $this->message('error','500','Cannot create account!')
                 ->view('auth/register');
         }
     }

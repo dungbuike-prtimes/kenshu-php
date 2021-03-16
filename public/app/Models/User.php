@@ -10,7 +10,7 @@ class User extends Model
         $this->table = 'users';
     }
 
-    public function auth($email, $password) {
+    public function verifyUser($email, $password) {
         $this->db->query("SELECT * FROM users WHERE email = :email");
         $this->db->bind(':email', $email, null);
         $user = $this->db->first();
@@ -29,7 +29,9 @@ class User extends Model
         $this->db->bind(':username', $params['username'], null);
         $this->db->bind(':phone_number', $params['phone_number'], null);
         $this->db->bind(':password', password_hash($params['password'], PASSWORD_DEFAULT), null);
-        return $this->db->execute();
+        if(!$this->db->execute()) {
+            throw new PDOException("Cannot create account!");
+        }
     }
 
     public function isExisted($email) :bool {

@@ -28,7 +28,9 @@ class Tag extends Model
         $this->db->query("INSERT INTO tags (NAME, description) VALUES (:name, :description)");
         $this->db->bind(':name', $params["name"], null);
         $this->db->bind(':description', $params["description"], null);
-        return $this->db->execute();
+        if (!$this->db->execute()) {
+            throw new PDOException("Create tag failed!");
+        };
     }
 
     public function update($params) {
@@ -40,8 +42,9 @@ class Tag extends Model
         $this->db->bind(':description', $params["description"], null);
         if ($this->db->execute()) {
             return $tag = $this->getById($params["id"]);
-        };
-        return false;
+        } else {
+            throw new PDOException("Update tag failed");
+        }
     }
 
 }
