@@ -129,7 +129,7 @@ class PostController extends BaseController
         $tags = $Tag->getAll();
         $data['tags'] = $tags;
         $data['post'] = $Post_model->getPost($id);
-        if (empty($post) || ($post["OWNER"] !== $current_user)) {
+        if (empty($data['post']) || ($data['post']["OWNER"] != $current_user)) {
             return header('Location:/posts');
         }
         if (empty($_POST['title']) || empty($_POST['content'])) {
