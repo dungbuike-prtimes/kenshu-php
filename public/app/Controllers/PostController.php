@@ -135,7 +135,7 @@ class PostController extends BaseController
         if (empty($_POST['title']) || empty($_POST['content'])) {
             $data['csrf_token'] = $csrf->generateToken();
             return $this->message('error', '400', 'Title and Content is required!')
-                ->view('post/create', $data);
+                ->view('post/edit', $data);
         }
         if (!FileUploadHelper::fileValidate($_FILES)) {
             return $this->message('error', '400', 'File not allowed!')
