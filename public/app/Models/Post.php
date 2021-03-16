@@ -120,23 +120,20 @@ class Post extends Model
     }
 
     public function deletePost($id) {
-        $this->db->query("UPDATE images SET deleted_at = :deleted_at WHERE post_id = :id");
+        $this->db->query("DELETE FROM images WHERE post_id = :id ");
         $this->db->bind(':id', $id, null);
-        $this->db->bind(':deleted_at', date("Y-m-d H:i:s"), null);
         if(!$this->db->execute()) {
             throw new PDOException("An error occurred when remove image, Delete post failed!");
         };
 
-        $this->db->query("UPDATE post_tag SET deleted_at = :deleted_at WHERE post_id = :id");
+        $this->db->query("DELETE FROM post_tag WHERE post_id = :id");
         $this->db->bind(':id', $id, null);
-        $this->db->bind(':deleted_at', date("Y-m-d H:i:s"), null);
         if(!$this->db->execute()) {
             throw new PDOException("An error occurred when remove tag, Delete post failed!");
         };
 
-        $this->db->query("UPDATE posts SET deleted_at = :deleted_at WHERE id = :id");
+        $this->db->query("DELETE FROM posts WHERE id = :id");
         $this->db->bind(':id', $id, null);
-        $this->db->bind(':deleted_at', date("Y-m-d H:i:s"), null);
         if (!$this->db->execute()) {
             throw new PDOException("Delete post failed!");
         };
