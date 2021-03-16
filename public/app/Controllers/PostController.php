@@ -123,7 +123,7 @@ class PostController extends BaseController
         try {
             $params['owner'] = InputHelper::int($id);
         } catch (Exception $e) {
-            $this->message('error', $e->getCode(), $e->getMessage());
+            $this->message('error', $e->getCode(), $e->getMessage())->view('post/edit');
             return header('location:/posts');
         }
         $tags = $Tag->getAll();
@@ -174,14 +174,12 @@ class PostController extends BaseController
             $post = $Post_model->getPost($id);
             $data['post'] = $post;
             $data['tags'] = $tags;
-            $csrf = new Csrf();
             $data['csrf_token'] = $csrf->generateToken();
             return $this->message("success", "200", "Updated!")->view('post/edit', $data);
         } catch (PDOException $e) {
             $db->rollBack();
-            $this->message('error', '500', 'Database error. Update failed!');
+            $this->message('error', '500', 'Database error. Update failed!')->view('post/edit');
             return header('location:/posts');
-
         }
     }
 

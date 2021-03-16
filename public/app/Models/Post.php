@@ -91,7 +91,7 @@ class Post extends Model
         $this->db->bind(':id', $id, null);
         $this->db->bind(':title', $params['title'], null);
         $this->db->bind(':content', $params['content'], null);
-        if($this->db->execute()) {
+        if(!$this->db->execute()) {
             throw new PDOException("Update post failed!");
         };
     }
