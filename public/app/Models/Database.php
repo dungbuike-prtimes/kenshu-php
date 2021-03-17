@@ -8,14 +8,14 @@ class Database
 
     public function __construct()
     {
-        $conn = 'mysql:host=' . getenv('DB_HOST') . ';dbname=' . getenv('DB_NAME');
+        $conn = 'mysql:host=' . DB_HOST . ';dbname=' . DB_NAME;
         $options = array(
             PDO::ATTR_PERSISTENT => true,
             PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
             PDO::ATTR_EMULATE_PREPARES => false
         );
         try {
-            $this->database = new PDO($conn, getenv('DB_USER'), getenv('DB_PASS'), $options);
+            $this->database = new PDO($conn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
             $this->error = $e->getMessage();
             echo $e;
