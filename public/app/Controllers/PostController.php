@@ -70,7 +70,10 @@ class PostController extends BaseController
         try {
             $db->beginTransaction();
             $post = $Post_model->create($params);
-            FileUploadHelper::handleFileUpload($_FILES, $post, $Post_model);
+            $file_list = FileUploadHelper::handleFileUpload($_FILES);
+            foreach ($file_list as $file) {
+                $Post_model->insertImage($post, $file);
+            }
             for ($i = 0; $i < count($_POST['tag']); $i++) {
                 $Post_model->insertTag($post, h($_POST['tag'][$i]));
             }
@@ -160,7 +163,10 @@ class PostController extends BaseController
                     $Post_model->deleteImage(h($img));
                 }
             }
-            FileUploadHelper::handleFileUpload($_FILES, $id, $Post_model);
+            $file_list = FileUploadHelper::handleFileUpload($_FILES);
+            foreach ($file_list as $file) {
+                $Post_model->insertImage($id, $file);
+            }
             $post_tags = $Post_model->getTagsOfPost($id);
             foreach ($post_tags as $post_tag) {
                 $Post_model->deletePostTag($id, $post_tag['id']);
