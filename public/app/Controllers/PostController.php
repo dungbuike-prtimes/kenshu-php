@@ -159,8 +159,14 @@ class PostController extends BaseController
             $db->beginTransaction();
             $Post_model->update($id, $params);
             if (isset($_POST['deleteImage'])) {
-                foreach ($_POST['deleteImage'] as $img) {
-                    $Post_model->deleteImage(h($img));
+                foreach ($_POST['deleteImage'] as $del_img) {
+                    $img = $Post_model->getImagesById($del_img);
+                    if ($img) {
+                        if (file_exists(__DIR__ . '/../../' . $img['url'])) {
+                            unlink(__DIR__ . '/../../' . $img['url']);
+                        }
+                        $Post_model->deleteImage(h($del_img));
+                    }
                 }
             }
             $file_list = FileUploadHelper::handleFileUpload($_FILES);
@@ -184,7 +190,7 @@ class PostController extends BaseController
             return $this->message("success", "200", "Updated!")->view('post/edit', $data);
         } catch (PDOException $e) {
             $db->rollBack();
-            $this->message('error', '500', 'Database error. Update failed!')->view('post/edit');
+            $this->message('error', '500', 'Database error. Update failed!' . $e)->view('post/edit');
             return header('location:/posts');
         }
     }
@@ -210,6 +216,14 @@ class PostController extends BaseController
         $db = $Post_model->db->database;
         try {
             $db->beginTransaction();
+            $images = $Post_model->getImagesOfPost($id);
+            if($images) {
+                foreach ($images as $img) {
+                    if (file_exists(__DIR__ . '/../../' . $img['url'])) {
+                        unlink(__DIR__ . '/../../' . $img['url']);
+                    }
+                }
+            }
             $Post_model->deletePost($id);
             $db->commit();
             $this->message("success", "200", "Post is deleted");

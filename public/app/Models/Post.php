@@ -63,6 +63,13 @@ class Post extends Model
         return $images ? $images : null;
     }
 
+    public function getImagesById($id) {
+        $this->db->query("SELECT id, url FROM images WHERE id = :id");
+        $this->db->bind(':id', $id, null);
+        $images = $this->db->first();
+        return $images ? $images : null;
+    }
+
     public function update($id, $params) {
         $this->db->query("UPDATE posts SET title = :title, content = :content WHERE id = :id");
         $this->db->bind(':id', $id, null);
